@@ -1,0 +1,67 @@
+[
+  {
+    "id": "world",
+    "title": "Begehbare Welt mit Zitadelle, Hain und Ruinen",
+    "status": "Erledigt"
+  },
+  {
+    "id": "magic",
+    "title": "Blüte, Funken, Schutz und LOVE mit sichtbarer Weltwirkung",
+    "status": "Erledigt"
+  },
+  {
+    "id": "people",
+    "title": "Eigene Figuren, Gespräche und entstehende Gemeinschaften",
+    "status": "Erledigt"
+  },
+  {
+    "id": "guests",
+    "title": "Zehn lokale Gastplätze und gemeinsamer Weltzustand",
+    "status": "Erledigt"
+  },
+  {
+    "id": "seeds",
+    "title": "Reproduzierbare Welt-Seeds, Checkpoints und Chronik",
+    "status": "Erledigt"
+  },
+  {
+    "id": "sources",
+    "title": "Öffentliche HALVETH-/LUCINET-Quellen als kuratierte Ideenbibliothek",
+    "status": "Erledigt"
+  },
+  {
+    "id": "license",
+    "title": "Eigener MIT-Code und gekennzeichnete Three.js-Lizenz",
+    "status": "Erledigt"
+  },
+  {
+    "id": "offline",
+    "title": "Lokaler Start und offline erzeugte Inhaltsvorschläge",
+    "status": "Erledigt"
+  },
+  {
+    "id": "github",
+    "title": "Juri-Halveth/halveth-realms: öffentliches Repository und Release",
+    "status": "In Arbeit"
+  },
+  {
+    "id": "public-server",
+    "title": "Öffentlicher Mehrspielerdienst mit Betrieb und Lasttests",
+    "status": "Neu"
+  },
+  {
+    "id": "chain",
+    "title": "Optionaler Checkpoint-Vertrag und ungesendeter Anker-Vorschlag",
+    "status": "Erledigt"
+  },
+  {
+    "id": "production-art",
+    "title": "Produktionsreife Charaktere, Animationen und große Städte",
+    "status": "Neu"
+  },
+  {
+    "id": "chain-live",
+    "title": "Gewählte Blockchain, Vertragsbereitstellung und reale Transaktion",
+    "status": "Neu"
+  }
+]

@@ -1,0 +1,14 @@
+.local/
+releases/
+node_modules/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.omwsave
+*.sqlite3
+Thumbs.db
+.DS_Store

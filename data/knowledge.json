@@ -1,0 +1,132 @@
+[
+  {
+    "id": "halveth-portal",
+    "title": "HALVETH × LUCINET · Ein gemeinsamer Einstieg",
+    "topic": "Verbundene Welten",
+    "summary": "Das öffentliche Portal verbindet Scarlet, Open Research und Lernstudio über eine zweisprachige, statische Oberfläche. Die Projekte bleiben eigenständige Ziele mit eigener Herkunft.",
+    "url": "https://github.com/Juri-Halveth/Juri-Halveth.github.io/blob/3ad30e10cac511ed168e98e06ea2d0f48f9896f9/README.md",
+    "license": "HALVETH PIRL 2.0 für neue Portalbeiträge; historische und fremde Rechte getrennt. Nur eigene Paraphrase.",
+    "status": "PUBLIC_SOURCE_READ",
+    "designUse": "Ein begehbarer zentraler Platz verbindet Lernhaus, Garten und Forschungsatelier. Jede Station nennt ihren Zweck und öffnet eine eigene Tätigkeit."
+  },
+  {
+    "id": "scarlet-garden",
+    "title": "Scarlet · Profile, Quellen und ein Garten",
+    "topic": "Charaktere und Atmosphäre",
+    "summary": "Die öffentliche Scarlet-Beschreibung verbindet einen drehbaren Globus, auswählbare Profile, einen gemeinsamen Figurenkatalog und bewusst auslösbare Gartenereignisse. Profile führen Rolle, Quellen und Inhaltsstand; Bewegung und Ton lassen sich getrennt wählen.",
+    "url": "https://github.com/Juri-Halveth/halveth-scarlet/blob/d2a253156c1f0d0f59eb92fb5bd5875b090ceedf/README.md",
+    "license": "HALVETH PIRL 2.0; externe Figuren, Namen und Medien behalten eigene Rechte. Hier keine Figurenbilder, Dialoge oder Designs übernommen.",
+    "status": "PUBLIC_SOURCE_READ",
+    "designUse": "Eigenständig gestaltete Bewohner erhalten unterscheidbare Rollen und erreichbare Wissensorte. Blütenmagie verändert die Szene sichtbar; reduzierte Bewegung bleibt wählbar."
+  },
+  {
+    "id": "lernstudio-memory",
+    "title": "Lernstudio · Fortschritt gehört zur Person",
+    "topic": "Getrennte Erinnerungen",
+    "summary": "Lernstudio beschreibt kostenlose interaktive Lerninhalte sowie Fortschritt, der einem eigenen Konto zugeordnet und bei Verbindungsproblemen getrennt zwischengespeichert wird. Eine Sicherung wird ausdrücklich zusammengeführt.",
+    "url": "https://github.com/Juri-Halveth/lernstudio/blob/b930b09f89020b57bb91e29305b7577527a91335/README.md",
+    "license": "Pfad- und versionsabhängig: historische Freigaben; neue Beiträge teils HALVETH PIRL 2.0. Hier nur eigene Paraphrase und Quellenverweis.",
+    "status": "PUBLIC_SOURCE_READ",
+    "designUse": "Eine Figur oder ein Gast erhält einen eigenen Erinnerungsraum. Ein Weltwechsel erzeugt eine klare Zuordnung, damit Gespräche und Fortschritt nicht zufällig zwischen Personen vermischt werden."
+  },
+  {
+    "id": "lernportal-access",
+    "title": "Mein Lernportal · Lernen durch Ausprobieren",
+    "topic": "Freie Bildung",
+    "summary": "Das öffentliche Lernportal beschreibt einen direkt zugänglichen Katalog mit Übungen, Quizzen und Visualisierungen. Lernfortschritt bleibt lokal und kann exportiert, importiert oder gelöscht werden.",
+    "url": "https://github.com/Juri-Halveth/mein-lernportal/blob/5b46c2206ba408d70017378486cda8ea94f090b2/README.md",
+    "license": "ISC für originalen Plattformcode und Originallektionen laut LICENSE.txt; getrennte Hinweise für Drittmaterial. Hier nur eigene Paraphrase.",
+    "status": "PUBLIC_SOURCE_READ",
+    "designUse": "Wissen wird als freiwillige Tätigkeit in der Welt angeboten: Kristalle stimmen, Brücken bauen, Pflanzen beobachten. Die Bibliothek ist ohne Kauf zugänglich."
+  },
+  {
+    "id": "research-branches",
+    "title": "Open Research · Kleine fortsetzbare Projekte",
+    "topic": "Welt als Werkstatt",
+    "summary": "Open Research ordnet öffentliche Fragen in einzelne Projektäste. Ein Einstieg kann Lesen, ein kleines Modell oder ein nachvollziehbarer Beitrag sein; fehlende Informationen bleiben sichtbar.",
+    "url": "https://github.com/Juri-Halveth/open-research-branches/blob/978a38931535023c136b8183c8d187d1a6f60056/README.md",
+    "license": "Pfad- und versionsabhängig: historische Freigaben; neue Beiträge teils HALVETH PIRL 2.0. Hier nur eigene Paraphrase und Quellenverweis.",
+    "status": "PUBLIC_SOURCE_READ",
+    "designUse": "Siedlungen erhalten kleine gemeinsame Vorhaben mit erreichbaren Zwischenzielen. Ein Projekt kann wachsen, pausieren oder mit einer anderen Idee fortgesetzt werden."
+  },
+  {
+    "id": "aster-memory-lens",
+    "title": "LUCINET::ASTER · Quelle und Erinnerung auseinanderhalten",
+    "topic": "Relationale Weltobjekte",
+    "summary": "Der öffentliche ASTER-Text unterscheidet ursprüngliche Quelle, ihre Darstellung, eine ältere Spur und den neuen Zustand. Der Garten bietet diesen verschiedenen Perspektiven eine gemeinsame Erzähloberfläche.",
+    "url": "https://github.com/Juri-Halveth/open-research-branches/blob/978a38931535023c136b8183c8d187d1a6f60056/branches/aster-provenance-and-secret-garden/README.md",
+    "license": "Pfad- und versionsabhängig: historische Freigaben; neue Beiträge teils HALVETH PIRL 2.0. Hier nur eigene Paraphrase und Quellenverweis.",
+    "status": "PUBLIC_SOURCE_READ",
+    "designUse": "Bewohner können zwischen eigener Begegnung, erzählter Nachricht und älterer Erinnerung unterscheiden. Weltobjekte verbinden Ereignis, Zeitpunkt und beteiligte Figuren statt nur ein loses Textfeld zu besitzen."
+  },
+  {
+    "id": "inquiry-dialogue",
+    "title": "Binary Inquiry Loop · Eine gemeinsame Frage",
+    "topic": "Zusammenarbeit",
+    "summary": "Das veröffentlichte Dialogmodell hält dieselbe Frage für beide Seiten fest. Zustimmung, Widerspruch und eine noch offene Antwort bleiben getrennte Ergebnisse; begrenzte Runden dürfen mit einer offenen Frage enden.",
+    "url": "https://github.com/Juri-Halveth/open-research-branches/blob/978a38931535023c136b8183c8d187d1a6f60056/branches/binary-inquiry-loop/README.md",
+    "license": "Pfad- und versionsabhängig: historische Freigaben; neue Beiträge teils HALVETH PIRL 2.0. Hier nur eigene Paraphrase und Quellenverweis.",
+    "status": "PUBLIC_SOURCE_READ",
+    "designUse": "Gemeinsame Vorhaben und Gilden entstehen durch klar benannte Vorschläge und Antworten. Ein Bewohner darf ablehnen oder um Klärung bitten; daraus kann eine neue Spielaufgabe entstehen."
+  },
+  {
+    "id": "focus-player-choice",
+    "title": "Focus Kernel · Das gewählte Ziel bleibt sichtbar",
+    "topic": "Spielerentscheidung",
+    "summary": "Focus Kernel beschreibt einen kleinen lokalen Prototyp, der ein bestätigtes Ziel von neuen Vorschlägen und fehlendem Kontext trennt. Beratende Rollen liefern Hinweise, ohne das gewählte Ziel selbst umzuschreiben.",
+    "url": "https://github.com/Juri-Halveth/open-research-branches/blob/978a38931535023c136b8183c8d187d1a6f60056/branches/focus-kernel/README.md",
+    "license": "README nennt MIT für Code und CC BY 4.0 für Prosa; übergreifende Lizenzkarte enthält zusätzlich eine Grenze für neue Beiträge. Hier nur eigene Paraphrase.",
+    "status": "PUBLIC_SOURCE_READ",
+    "designUse": "Die Reise kann auf Erkunden, Helfen oder Lernen ausgerichtet werden. Ein NPC schlägt Alternativen vor; der Gast entscheidet, ob das aktive Vorhaben wechselt."
+  },
+  {
+    "id": "research-contribution",
+    "title": "Mitmachen · Fragen sind Beiträge",
+    "topic": "Gemeinschaft",
+    "summary": "Die öffentliche Mitmachseite lädt zu Fragen, Quellenkorrekturen, kleinen Patches und nachvollziehbaren Ergebnissen ein. Sie empfiehlt einen konkreten Bezugspunkt, einen nächsten Schritt und eine passende Zuschreibung des Beitrags.",
+    "url": "https://github.com/Juri-Halveth/open-research-branches/blob/978a38931535023c136b8183c8d187d1a6f60056/wiki/Mitmachen.md",
+    "license": "Pfad- und versionsabhängig: historische Freigaben; neue Beiträge teils HALVETH PIRL 2.0. Hier nur eigene Paraphrase und Quellenverweis.",
+    "status": "PUBLIC_SOURCE_READ",
+    "designUse": "Das lokale Aufgabenbrett zeigt neue, laufende und fertige Vorhaben. Bewohner würdigen konkrete Hilfe; unterschiedliche Rollen können zum selben Ergebnis beitragen."
+  },
+  {
+    "id": "three-local-world",
+    "title": "Three.js · Eine lokal ausgelieferte 3D-Welt",
+    "topic": "3D-Technik",
+    "summary": "Die offizielle Installationsanleitung beschreibt Browserprojekte aus HTML und JavaScript, lokale Entwicklungsserver sowie getrennt importierbare Erweiterungen. Die Bibliothek stellt Grundlagen für interaktive 3D-Szenen bereit.",
+    "url": "https://threejs.org/manual/pages/installation.html",
+    "license": "Three.js: MIT laut offiziellem LICENSE. Die Karte ist eine eigene Zusammenfassung; Versions- und Lizenzhinweise gehören zu tatsächlich ausgelieferten Bibliotheksdateien.",
+    "status": "OFFICIAL_SOURCE_READ",
+    "designUse": "Geometrie, Licht und Bewegung bilden eine direkt begehbare Szene. Lokale Auslieferung vermeidet eine CDN-Abhängigkeit beim Spielen."
+  },
+  {
+    "id": "openmw-records",
+    "title": "OpenMW · Definition, Instanz und aktiver Ort",
+    "topic": "Weltarchitektur",
+    "summary": "Die OpenMW-Dokumentation unterscheidet dauerhafte Objektdefinitionen von platzierten Instanzen. Weltbereiche können aktiv oder inaktiv sein; lokale Verarbeitung hängt an einem konkreten Objekt und seinem aktiven Bereich.",
+    "url": "https://openmw.readthedocs.io/en/stable/reference/lua-scripting/overview.html",
+    "license": "Dokumentationslizenz in dieser Recherche nicht gesondert festgestellt; nur eigene kurze Paraphrase, kein Code- oder Assetimport.",
+    "status": "OFFICIAL_SOURCE_READ",
+    "designUse": "Ein kleiner Weltkeim beschreibt Landschaft und Bewohner. Erst besuchte Bereiche benötigen volle Darstellung; wiederkehrende Objekttypen verwenden gemeinsame Definitionen."
+  },
+  {
+    "id": "gltf-assets",
+    "title": "Khronos glTF · Austauschbare 3D-Bausteine",
+    "topic": "Grafik und Erweiterung",
+    "summary": "Khronos beschreibt glTF als gebührenfreie Spezifikation zur effizienten Übertragung und Nutzung von 3D-Szenen. Das Format kann unter anderem Geometrie, Materialien und Animationen zusammenführen.",
+    "url": "https://www.khronos.org/gltf/",
+    "license": "glTF ist eine royalty-free Spezifikation; konkrete Modelle, Texturen und Marken haben eigene Rechte. Die Karte übernimmt keine Medien.",
+    "status": "OFFICIAL_SOURCE_READ",
+    "designUse": "Spätere eigene oder passend lizenzierte Modelle können als klar abgegrenzte Bausteine ergänzt werden. Quelle, Version und Asset-Lizenz bleiben je Paket sichtbar."
+  },
+  {
+    "id": "mit-open-source",
+    "title": "MIT · Auch kommerziell verwendbarer Quellcode",
+    "topic": "Open Source",
+    "summary": "Die bei der Open Source Initiative veröffentlichte MIT-Lizenz erlaubt Nutzung, Änderungen, Weitergabe und Verkauf von Kopien. Der zugehörige Copyright- und Erlaubnishinweis muss bei Kopien oder wesentlichen Teilen erhalten bleiben.",
+    "url": "https://opensource.org/license/mit",
+    "license": "MIT; hier eine kurze eigene Zusammenfassung des offiziellen Lizenztexts.",
+    "status": "OFFICIAL_SOURCE_READ",
+    "designUse": "Eigener Spielcode kann unter MIT frei weitergebaut und auch kommerziell verwendet werden. Freiwillige Spenden und zusätzliche Dienstleistungen lassen sich getrennt anbieten."
+  }
+]

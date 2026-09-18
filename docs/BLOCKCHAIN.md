@@ -1,0 +1,17 @@
+# Optionaler Checkpoint-Anker
+
+HALVETH Realms funktioniert vollständig lokal. Der optionale Adapter bindet einen Welt-Export an einen möglichen späteren Blockchain-Eintrag. Er erzeugt **nur einen ungesendeten JSON-Vorschlag**; das Spiel benötigt dafür weder Konto noch Wallet.
+
+`shared/anchor.mjs` prüft den SHA-256-Checkpoint und die enthaltene Ereigniskette aus `/api/export`. `createAnchorIntent(export, { chainId, contractAddress })` verlangt eine konkrete Zielkette und Vertragsadresse. Das Ergebnis enthält Welt-ID, Checkpoint-Hash, Epoche und die Argumente für `anchor(string,bytes32,uint64)`. Sein Status lautet `UNSENT`; Transaktion, Signatur und Beleg stehen auf `null`. Vertragsadresse und Kette werden nicht über das Netz geprüft. Es gibt keinen Standardvertrag.
+
+Der Vorschlag enthält keine NPC-Gespräche, Gastnamen oder Saatphrase. Private Schlüssel und Recovery-Phrasen gehören nicht zu den akzeptierten Zielangaben. Das Modul hat weder RPC- noch Wallet-Funktionen und berechnet keine ungeprüfte Calldata. Es lässt sich als ES-Modul mit Node ≥22 importieren; Browser benötigen eine Umgebung mit Web Crypto. Der aktuelle Spielserver veröffentlicht nur sein Weltmodul, keinen Wallet-Dialog.
+
+`chain/WorldAnchor.sol` protokolliert ein Ereignis mit dem tatsächlichen Absender (`msg.sender`), Welt-ID, deren Keccak-256-Kennung, Checkpoint-Hash und Epoche. Jeder Eintrag ist durch den Absender unterscheidbar. Der Vertrag vergibt kein Eigentum an einer Welt und beeinflusst keine Spielaktionen. Er enthält keine Token, Zahlungen, Auszahlungen, externen Vertragsaufrufe oder Administratorfunktionen.
+
+**Lokal geprüft:** Der Vertrag wurde mit dem offiziellen npm-Paket `solc@0.8.30`, Compiler `0.8.30+commit.73712a01.Emscripten.clang`, Optimierer mit 200 Durchläufen und EVM-Ziel `paris` ohne Fehler oder Warnungen kompiliert. Ergebnis: 639 Byte Erzeugungscode, 608 Byte Laufzeitcode. Der Compiler lieferte den Methodenselektor `0xb5581648`; dieser wurde nicht durch NIST SHA3 ersetzt. SHA-256 des kompilierten Quelltexts: `c6c99ee70ccdef8bbc78e29d07cca386ba8f2c9957cbea9edabd62c6690395ae`. Installation und Standard-JSON-Schnittstelle sind in der [offiziellen Solidity-Dokumentation](https://docs.soliditylang.org/en/v0.8.30/installing-solidity.html) und beim [offiziellen solc-js-Projekt](https://github.com/argotorg/solc-js) beschrieben.
+
+Die Node-Tests prüfen echte Server-Exports, Inhaltshashes, Kettenverknüpfungen, ungültige Ziele und die Kennzeichnung unvollständiger älterer Historie. Sie führen **keine EVM-Transaktion** aus. Es wurde kein Vertrag bereitgestellt, kein RPC aufgerufen, keine Wallet geöffnet und kein On-Chain-Ergebnis getestet. Der Compiler liegt nur im Arbeitsverzeichnis und wird nicht als Spieldatei benötigt.
+
+Ein lokaler Hash beweist die Bindung an bestimmte Daten, keine Unveränderlichkeit des Computers, keine historische Wahrheit und keinen Netzwerkkonsens. Die exportierte Kette enthält höchstens die letzten 1.024 Ereignisse; `ledgerBase` kennzeichnet die vorherige Kante. Ein später tatsächlich veröffentlichter Anker könnte belegen, welcher Account den Hash auf der gewählten Kette eingetragen hat. Er würde die Spielgeschichte dadurch nicht automatisch wahr oder vollständig machen.
+
+Aus dem Projektordner laufen alle lokalen Tests mit `npm test`. Eine spätere tatsächliche Bereitstellung oder Übermittlung wäre ein eigener, bewusst ausgewählter Schritt mit konkreter Kette, geprüftem Vertrag und Wallet-Bestätigung; sie gehört nicht zu diesem Prototyp.

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101b22">
+  <title>HALVETH Realms · Eine Welt beginnt</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23bd435e' d='M32 3 39 25 61 32 39 39 32 61 25 39 3 32 25 25Z'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main id="scene" aria-label="Begehbare Fantasywelt"></main>
+  <div class="world-vignette" aria-hidden="true"></div>
+  <div id="loading" class="loading" role="status"><span class="loading-mark">✦</span><span>Eine Welt nimmt Gestalt an …</span></div>
+  <section id="entry" class="entry-panel" aria-labelledby="entry-title">
+    <div class="eyebrow">HALVETH REALMS <span>·</span> LOCAL EDITION 01</div>
+    <div class="entry-sigil" aria-hidden="true">✦</div>
+    <h1 id="entry-title">Eine Welt.<br><em>Deine Geschichte.</em></h1>
+    <p class="entry-description">Hinter der scharlachroten Zitadelle wachsen neue Geschichten. Geh auf Entdeckung, sprich mit ihren Bewohnern und hinterlasse ein wenig Magie.</p>
+    <form id="join-form">
+      <label class="field" for="guest-name"><span>Wie nennt man dich hier?</span><input id="guest-name" name="name" autocomplete="off" maxlength="32" value="Reisende Person" required></label>
+      <button class="primary" id="enter-button" type="submit">Welt betreten <span aria-hidden="true">↗</span></button>
+    </form>
+    <p id="join-status" role="status" class="small">Eine originale, lokal erzeugte Welt. Zehn gemeinsame Gastplätze.</p>
+    <div class="entry-footnote">WASD bewegen <span>·</span> Ziehen zum Umsehen <span>·</span> E Gespräch</div>
+  </section>
+  <div id="game-ui" hidden>
+    <header class="topbar">
+      <a class="brand" href="#" id="brand-button" aria-label="Weltmenü öffnen"><span aria-hidden="true">✦</span> HALVETH <small>REALMS</small></a>
+      <div class="world-label"><span id="realm-name">Die erste Lichtung</span><small><span id="epoch">Epoche 0</span><span class="label-divider"> / </span><span id="culture-count">0 Kulturen</span></small></div>
+      <div class="top-actions"><span id="guest-count" class="status-pill">1 / 10 Gäste</span><button id="help-button" class="icon-button" aria-label="Steuerung anzeigen">?</button><button id="menu-button" class="menu-button">Weltmenü <span aria-hidden="true">☰</span></button></div>
+    </header>
+    <div class="compass" aria-label="Blickrichtung"><span>‹</span><span id="compass-label">N</span><span>›</span></div>
+    <div class="reticle" aria-hidden="true"></div>
+    <div id="npc-prompt" class="interaction" hidden><span id="npc-prompt-name"></span><button id="nearby-talk-button"><kbd>E</kbd> Gespräch beginnen</button></div>
+    <aside class="bottom-hud">
+      <div class="place-label"><span>DU ENTDECKST</span><strong id="location-name">Das scharlachrote Tor</strong><small id="exploration-status">Zu Fuß unterwegs</small></div>
+      <div class="spellbar" aria-label="Zauber">
+        <button data-spell="bloom" aria-label="Blüte wirken, Taste 1"><span class="spell-number">1</span><span class="spell-icon">❋</span><span class="spell-title">Blüte</span><span class="spell-hint">Leben säen</span></button>
+        <button data-spell="spark" aria-label="Funken wirken, Taste 2"><span class="spell-number">2</span><span class="spell-icon">ϟ</span><span class="spell-title">Funken</span><span class="spell-hint">Neugier wecken</span></button>
+        <button data-spell="ward" aria-label="Schutz wirken, Taste 3"><span class="spell-number">3</span><span class="spell-icon">◇</span><span class="spell-title">Schutz</span><span class="spell-hint">Nähe bewahren</span></button>
+        <button data-spell="love" aria-label="Love wirken, Taste 4"><span class="spell-number">4</span><span class="spell-icon">♥</span><span class="spell-title">LOVE</span><span class="spell-hint">Wärme schenken</span></button>
+      </div>
+      <div class="hintline"><span>WASD <small>bewegen</small></span><span>LEER <small>schweben</small></span><span>E <small>sprechen</small></span><button id="look-button">Mausblick</button></div>
+    </aside>
+    <div id="mobile-controls" class="mobile-controls" aria-label="Bewegungssteuerung">
+      <div class="movement"><button data-move="forward" aria-label="Vorwärts">↑</button><button data-move="left" aria-label="Links">←</button><button data-move="back" aria-label="Rückwärts">↓</button><button data-move="right" aria-label="Rechts">→</button></div>
+      <div class="mobile-actions"><button id="levitate-button" aria-pressed="false">↑ Schweben</button><button id="talk-button">Gespräch</button></div>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <dialog id="side-panel" class="panel" aria-labelledby="panel-title">
+    <header class="panel-header"><div><span class="eyebrow">DEIN LOKALES UNIVERSUM</span><h2 id="panel-title">Die Welt gestalten.</h2></div><button class="icon-button" id="close-panel" aria-label="Zurück zur Welt">×</button></header>
+    <nav class="panel-tabs" aria-label="Weltmenü"><button data-panel="world" aria-selected="true">Welt</button><button data-panel="talk" aria-selected="false">Gespräch</button><button data-panel="knowledge" aria-selected="false">Quellen</button><button data-panel="board" aria-selected="false">Rachel</button></nav>
+    <section class="panel-view" data-view="world">
+      <p class="eyebrow">ZEIT HINTERLÄSST SPUREN</p><h3>Was wächst als Nächstes?</h3><p>Mit jeder simulierten Epoche bewegen sich Bewohner, sammeln Erinnerungen und können neue Gemeinschaften bilden.</p>
+      <div class="stat-grid"><div><strong id="stat-epoch">0</strong><span>Epoche</span></div><div><strong id="stat-residents">0</strong><span>Bewohner</span></div><div><strong id="stat-cultures">0</strong><span>Kulturen</span></div></div>
+      <div class="control-row"><button class="secondary" data-evolve="1">+1 Epoche</button><button class="secondary" data-evolve="5">+5 Epochen</button><button class="secondary" data-evolve="10">+10 Epochen</button></div>
+      <div id="world-events" class="event-list" aria-live="polite"></div>
+      <h3>Ein neuer Horizont</h3><form id="world-form"><label class="field" for="seed-input"><span>Weltname & Erzeugungssatz</span><input id="seed-input" name="seed" maxlength="80" placeholder="Der Garten hinter den Sternen" required autocomplete="off"></label><p class="small muted">Ein Fantasiesatz erzeugt eine eigene Landschaft. Der bisherige Weltstand bleibt gespeichert. Ein Wechsel ist möglich, wenn du allein zu Gast bist.</p><button class="secondary" type="submit">Diese Welt entstehen lassen ↗</button></form>
+      <h3>Gemeinsam unterwegs <span id="slots-summary" class="small"></span></h3><p class="small muted">Zehn Gastplätze in diesem lokalen Prototyp. Ein weiteres Browserfenster kann einen eigenen Platz belegen.</p><div id="guest-list" class="guest-list"></div>
+      <div class="control-row"><button id="export-button" class="secondary">Weltstand exportieren ↓</button><button id="leave-button" class="quiet-button">Welt verlassen</button></div>
+      <p class="small muted">Der Export enthält Weltstand und Ereignisse mit Prüfsummen. Er ist eine lokale Aufzeichnung, keine Blockchain.</p>
+    </section>
+    <section class="panel-view" data-view="talk" hidden><span class="eyebrow">EINE BEGEGNUNG</span><h3 id="talk-name">Jemanden kennenlernen</h3><p id="talk-description">Geh zu einer Person in der Welt. Mit E oder „Gespräch“ beginnst du eine Unterhaltung in ihrer Nähe.</p><div id="conversation" class="conversation" aria-live="polite"></div><form id="talk-form"><label class="field" for="talk-input"><span>Deine Worte</span><textarea id="talk-input" rows="3" maxlength="600" placeholder="Was beschäftigt dich an diesem Ort?" required></textarea></label><button class="primary" id="talk-send" type="submit">Sprechen ↗</button></form><p id="talk-mode" class="small muted">Lokale Figurenpersönlichkeiten. Ein lokales Sprachmodell wird nur angezeigt, wenn es tatsächlich antwortet.</p></section>
+    <section class="panel-view" data-view="knowledge" hidden><span class="eyebrow">WISSEN HAT EINE HERKUNFT</span><h3>Ideen für diese Welt.</h3><p>Diese kuratierte Auswahl verbindet Gestaltung, Natur und offene Technik. Reale Quellen und die Erzählung der Spielwelt bleiben erkennbar.</p><div id="knowledge-list"></div></section>
+    <section class="panel-view" data-view="board" hidden><span class="eyebrow">RACHEL · BAUWERKSTATT</span><h3>Eine Welt wird gebaut.</h3><div id="board-list"></div></section>
+  </dialog>
+  <dialog id="help-panel" class="help-panel" aria-labelledby="help-title"><button id="close-help" class="icon-button" aria-label="Steuerung schließen">×</button><span class="eyebrow">DEIN ERSTER SCHRITT</span><h2 id="help-title">Folge deiner Neugier.</h2><div class="control-grid"><kbd>W A S D / ↑ ↓ ← →</kbd><span>Gehen und entdecken</span><kbd>Ziehen / Mausblick</kbd><span>In der Welt umsehen</span><kbd>Shift</kbd><span>Schneller reisen</span><kbd>Leertaste</kbd><span>Schweben, solange du hältst</span><kbd>E</kbd><span>Mit einer nahen Person sprechen</span><kbd>1 · 2 · 3 · 4</kbd><span>Blüte, Funken, Schutz und LOVE wirken</span><kbd>Esc</kbd><span>Maus freigeben / Menü schließen</span></div><p>Auf Touchgeräten: links unten bewegen, freie Spielfläche zum Umsehen ziehen. Die Zauber und Gespräche haben eigene Knöpfe.</p><button id="resume-button" class="primary">Zurück in die Welt ↗</button></dialog>
+  <script type="module" src="/game.mjs"></script>
+</body></html>

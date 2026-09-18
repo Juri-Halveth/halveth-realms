@@ -1,0 +1,62 @@
+{
+  "schema": "halveth-realms-build-result-v1",
+  "version": "0.1.0",
+  "recordedAt": "2026-09-18T23:54:17.256Z",
+  "maturity": "PLAYABLE_LOCAL_PROTOTYPE",
+  "tests": {
+    "command": "npm test",
+    "passed": 19,
+    "failed": 0,
+    "node": "v24.18.0",
+    "platform": "Windows",
+    "includes": [
+      "ten HTTP guest sessions",
+      "bounded movement and four spells",
+      "LOVE memory persistence",
+      "world checkpoint and multi-world restart",
+      "graceful CLI stop/start",
+      "offline fallback and curated model context",
+      "unsigned anchor intent and hash-linked export"
+    ]
+  },
+  "browser": {
+    "name": "Chrome",
+    "desktopVisualReview": true,
+    "mobileWidthsReviewed": [
+      390,
+      320
+    ],
+    "observed": [
+      "3D world rendered",
+      "saved flower grove survives reload and server restart",
+      "LOVE hearts rendered and friendly memories stored",
+      "touch movement and levitation",
+      "world seed switch and epoch controls",
+      "two browser guests share guest count",
+      "JSON export downloaded",
+      "13 source cards displayed",
+      "local Ollama reply labelled as actual model response"
+    ],
+    "applicationConsoleErrorsObserved": 0
+  },
+  "dependencies": {
+    "vendoredRenderer": "three@0.180.0",
+    "pinnedFilesVerified": 3,
+    "npmInstallRequiredToPlay": false
+  },
+  "blockchain": {
+    "contractCompiler": "solc@0.8.30",
+    "compilationErrors": 0,
+    "compilationWarnings": 0,
+    "evmExecutionTest": false,
+    "deployed": false,
+    "intentStatus": "UNSENT"
+  },
+  "bounds": [
+    "One procedural island rendered per selected seed; no infinite world streaming yet.",
+    "Ten guests are prototype server capacity; public deployment and load testing remain future work.",
+    "NPC dialogue and communities are game simulation; model replies can invent details.",
+    "World state is local and editable; hashes do not create consensus or immutability.",
+    "Curated knowledge includes 13 cards, not the whole web or every repository."
+  ]
+}
