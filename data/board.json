@@ -45,6 +45,21 @@
     "status": "Erledigt"
   },
   {
+    "id": "desktop",
+    "title": "Windows-App mit eingebauter Laufzeit, Icon, Installer und Deinstallation",
+    "status": "Erledigt"
+  },
+  {
+    "id": "display",
+    "title": "Grafikprofile, Auflösung, Schatten, Bildratenlimit und Rendering-Pause",
+    "status": "Erledigt"
+  },
+  {
+    "id": "commercial-signing",
+    "title": "Verifizierte Herausgebersignatur und externe Release-Abnahme",
+    "status": "Neu"
+  },
+  {
     "id": "public-server",
     "title": "Öffentlicher Mehrspielerdienst mit Betrieb und Lasttests",
     "status": "Neu"

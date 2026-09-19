@@ -1,5 +1,11 @@
 # Third-party notices
 
+## Desktop runtime and build tools (0.2.0)
+
+The Windows application includes Electron 44.4.3 (MIT) and its Chromium, Node.js and other runtime components under their respective licenses. The installed runtime contains `LICENSE.electron.txt` and `LICENSES.chromium.html`; keep these notices with redistributed binaries. Electron source and notices: https://github.com/electron/electron/tree/v44.4.3.
+
+Development dependencies are pinned in `package-lock.json`: electron-builder 26.15.3 (MIT) packages the application and its NSIS installer; @resvg/resvg-js 2.6.2 (MPL-2.0) renders the original SVG icon during the build. These development tools are not loaded as application dependencies at runtime. Upstream source and license files remain available at https://github.com/electron-userland/electron-builder and https://github.com/yisibl/resvg-js. The rendered HALVETH icon is original project artwork, licensed with this project.
+
 ## Three.js 0.180.0
 
 The browser rendering engine is Three.js, licensed under MIT by its contributors. Unmodified `three.module.js` and `three.core.js` are vendored for offline operation. The full notice is in `public/vendor/THREE-LICENSE.txt`.

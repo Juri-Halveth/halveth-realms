@@ -5,6 +5,8 @@
 *.md text eol=lf
 *.yml text eol=lf
 *.cmd text eol=crlf
+*.png -text
+*.ico -text
 public/vendor/three.core.js -text
 public/vendor/three.module.js -text
 public/vendor/THREE-LICENSE.txt -text

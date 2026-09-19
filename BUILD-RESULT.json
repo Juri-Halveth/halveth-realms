@@ -1,62 +1,155 @@
 {
-  "schema": "halveth-realms-build-result-v1",
-  "version": "0.1.0",
-  "recordedAt": "2026-09-18T23:54:17.256Z",
-  "maturity": "PLAYABLE_LOCAL_PROTOTYPE",
+  "schema": "halveth-realms-build-result-v2",
+  "version": "0.2.0",
+  "recordedAt": "2026-09-19T00:21:50.601Z",
+  "maturity": "PLAYABLE_INSTALLED_DESKTOP_PROTOTYPE",
   "tests": {
     "command": "npm test",
-    "passed": 19,
+    "passed": 29,
     "failed": 0,
-    "node": "v24.18.0",
+    "node": "24.18.0",
     "platform": "Windows",
     "includes": [
-      "ten HTTP guest sessions",
-      "bounded movement and four spells",
-      "LOVE memory persistence",
-      "world checkpoint and multi-world restart",
-      "graceful CLI stop/start",
-      "offline fallback and curated model context",
-      "unsigned anchor intent and hash-linked export"
+      "ten guests and HTTP actions",
+      "LOVE and NPC memory",
+      "multi-world restart and final checkpoint",
+      "concurrent close waits for persistence",
+      "graphics presets, frame limiter and paused rendering",
+      "desktop preference validation",
+      "unsigned checkpoint anchor intent"
     ]
   },
-  "browser": {
-    "name": "Chrome",
-    "desktopVisualReview": true,
-    "mobileWidthsReviewed": [
-      390,
-      320
-    ],
+  "desktop": {
+    "installer": {
+      "filename": "HALVETH-Realms-Setup-0.2.0-x64.exe",
+      "bytes": 112195635,
+      "sha256": "27dd9a9c5167698c0f27d2d923a91bf17e606b543657c0ab088c539596e673ba",
+      "platform": "win32-x64",
+      "signature": "NOT_SIGNED"
+    },
+    "installationExitCode": 0,
+    "uninstallationExitCode": 0,
+    "reinstalled": true,
+    "desktopShortcutVerified": true,
+    "startMenuShortcutVerified": true,
+    "normalLaunchViaDesktopShortcut": true,
+    "serverAndRuntimeIntegrated": true,
+    "separateNodeOrBrowserRequired": false,
+    "packagedAsar": true,
+    "qa": {
+      "status": "SELF_TEST_PASS",
+      "exitCode": 0,
+      "rendererReady": true,
+      "checkpointSaved": true,
+      "failures": [],
+      "versions": {
+        "electron": "44.4.3",
+        "chrome": "152.0.7977.130",
+        "node": "24.21.0"
+      },
+      "passed": true,
+      "functionalPassed": true,
+      "renderDiagnostics": {
+        "fpsMeterText": "60 FPS",
+        "renderPerformanceText": "60 FPS gemessen · Limit 60",
+        "documentHidden": false,
+        "documentHasFocus": true,
+        "windowFocused": true,
+        "gpuFeatureStatus": {
+          "2d_canvas": "enabled",
+          "direct_rendering_display_compositor": "disabled_off_ok",
+          "gpu_compositing": "enabled",
+          "multiple_raster_threads": "enabled_on",
+          "opengl": "enabled_on",
+          "rasterization": "enabled",
+          "raw_draw": "disabled_off_ok",
+          "skia_graphite": "disabled_off",
+          "trees_in_viz": "disabled_off",
+          "video_decode": "enabled",
+          "video_encode": "enabled",
+          "webgl": "enabled",
+          "webgpu": "enabled",
+          "webnn": "disabled_off"
+        },
+        "observedAt": "2026-09-19T00:21:00.730Z",
+        "minimumSettleMs": 2400,
+        "measuredFps": 60,
+        "activeSample": true,
+        "interpretation": "ONE_NATIVE_SAMPLE_NO_GENERAL_FPS_GUARANTEE"
+      },
+      "rendererLoaded": true,
+      "nativeWindowVisible": true,
+      "joinedGuestCount": 1,
+      "actionPath": "local-http-api",
+      "inputUiVerified": false,
+      "loveEffectObserved": true,
+      "careIncreased": true,
+      "preferenceReadBridgeObserved": true,
+      "worldId": "realm-e2423171bac0fc5639d0",
+      "epoch": 0,
+      "bridge": {
+        "isDesktop": true,
+        "platform": "win32",
+        "version": "0.2.0"
+      },
+      "webgl": {
+        "available": true,
+        "contextLost": false,
+        "width": 1782,
+        "height": 1122
+      },
+      "captures": [
+        {
+          "filename": "desktop-entry.png",
+          "sha256": "e164754b01ea85dd3a5a4ca333d0c9458da9da7b7e76f18abbfc56f2f29947e2",
+          "size": {
+            "width": 1783,
+            "height": 1122
+          }
+        },
+        {
+          "filename": "desktop-self-test.png",
+          "sha256": "15e22a9c6cbc5c0081597878befb236a98027f67f773108abf5771bb593dbeea",
+          "size": {
+            "width": 1783,
+            "height": 1122
+          }
+        }
+      ]
+    }
+  },
+  "preservation": {
+    "worldsMigrated": 2,
+    "copyHashesVerified": true,
+    "originalsPreserved": true,
+    "uninstallSaveFilesUnchanged": true
+  },
+  "cleanup": {
+    "removedFolders": 9,
+    "removedBytes": 20595893,
+    "scope": "selected regenerable test/download/compiler intermediates and Python bytecode within this task workspace",
+    "activeMorrowindInstallationPreserved": true
+  },
+  "browserUi": {
+    "testedVia": "Chrome UI automation on an isolated local QA world",
     "observed": [
-      "3D world rendered",
-      "saved flower grove survives reload and server restart",
-      "LOVE hearts rendered and friendly memories stored",
-      "touch movement and levitation",
-      "world seed switch and epoch controls",
-      "two browser guests share guest count",
-      "JSON export downloaded",
-      "13 source cards displayed",
-      "local Ollama reply labelled as actual model response"
+      "entry graphics menu",
+      "light preset changes actual buffer size and disables shadows",
+      "detailed preset changes actual buffer size and 4096 shadow allocation",
+      "guest join",
+      "LOVE button and response",
+      "pause card and paused FPS label",
+      "graphics preferences survive reload"
     ],
-    "applicationConsoleErrorsObserved": 0
-  },
-  "dependencies": {
-    "vendoredRenderer": "three@0.180.0",
-    "pinnedFilesVerified": 3,
-    "npmInstallRequiredToPlay": false
-  },
-  "blockchain": {
-    "contractCompiler": "solc@0.8.30",
-    "compilationErrors": 0,
-    "compilationWarnings": 0,
-    "evmExecutionTest": false,
-    "deployed": false,
-    "intentStatus": "UNSENT"
+    "applicationErrorsObserved": 0,
+    "performance": "1 FPS displayed during automated Chrome session; separate active native sample is recorded above, no cause inferred"
   },
   "bounds": [
-    "One procedural island rendered per selected seed; no infinite world streaming yet.",
-    "Ten guests are prototype server capacity; public deployment and load testing remain future work.",
-    "NPC dialogue and communities are game simulation; model replies can invent details.",
-    "World state is local and editable; hashes do not create consensus or immutability.",
-    "Curated knowledge includes 13 cards, not the whole web or every repository."
+    "Windows x64 local prototype; installer is unsigned.",
+    "Native render diagnostic is one active sample, not a sustained or cross-hardware performance guarantee.",
+    "Native input and menu clicks were not automated; browser UI and native integration were checked separately.",
+    "Character models, animation, audio, public multiplayer, controller support and broader accessibility QA remain production work.",
+    "Morrowind Native and Genesis remain separate installations; their assets are not included.",
+    "Blockchain remains an unsigned optional intent; no contract deployment or transaction occurred."
   ]
 }

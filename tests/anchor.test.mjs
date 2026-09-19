@@ -15,7 +15,7 @@ async function sample(t) {
   const dataDir = await mkdtemp(join(tmpdir(), 'halveth-anchor-test-'));
   const game = await createGameServer({ dataDir, seed: 'Checkpoint-Test', port: 0, autoTickMs: 0, clock: () => 12345678 });
   const { url } = await game.start();
-  t.after(async () => { await game.close(); await rm(dataDir, { recursive: true, force: true }); });
+  t.after(async () => { await game.close(); await rm(dataDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 }); });
   const response = await fetch(url + '/api/export');
   return response.json();
 }
@@ -85,7 +85,7 @@ test('compiler metadata remains bound to the exact contract source used in the r
 test('user CLI writes a verified UNSENT artifact and refuses to replace an existing file', async t => {
   const checkpoint = await sample(t);
   const dir = await mkdtemp(join(tmpdir(), 'halveth-anchor-cli-'));
-  t.after(() => rm(dir, { recursive: true, force: true }));
+  t.after(() => rm(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 }));
   const input = join(dir, 'export.json'), output = join(dir, 'intent.json');
   await writeFile(input, JSON.stringify(checkpoint));
   const args = ['--input', input, '--chain-id', '31337', '--contract-address', destination.contractAddress, '--output', output];

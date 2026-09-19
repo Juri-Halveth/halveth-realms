@@ -1,0 +1,948 @@
+{
+  "schema": "halveth-realms-project-navigation-package-v1",
+  "projectVersion": "0.2.0",
+  "recordedAt": "2026-09-19T00:18:46.008Z",
+  "maturity": "PLAYABLE_LOCAL_DESKTOP_PROTOTYPE",
+  "sourceBindings": {
+    "BASELINE-0.1.0": {
+      "state": "OBSERVED",
+      "description": "Vorherige Sourcefreigabe als unveränderte Referenz; dieser Desktop-Receipt ersetzt sie nicht.",
+      "artifact": "releases/HALVETH-Realms-0.1.0.zip",
+      "sha256": "3c0178d59e0a56ef47739e8f87b7dc1ae0d13e674868328cb7f10ea47b6dd209"
+    },
+    "SOURCE-DESKTOP-0.2.0": {
+      "state": "OBSERVED",
+      "description": "Eigenständiger Electron-Desktop-Rahmen mit integriertem lokalen Spielserver, getrennten Weltständen und gezielter HTTP-Cachepflege.",
+      "artifacts": [
+        "desktop/main.cjs",
+        "desktop/preload.cjs",
+        "desktop/preferences.cjs",
+        "server.mjs"
+      ],
+      "sha256": {
+        "desktop/main.cjs": "b4fae9f2009b9c6dd8e17d36e9e7e969e51fc7e23c931feedb33f805ee1f438e",
+        "desktop/preload.cjs": "10512749cdf6ac1a090cea9e15c41983986acfb3a4750b6102b9ddf0a4ec7b0c",
+        "desktop/preferences.cjs": "0c61d433a90f6177a044a0aa8e7e8d496f2556b121acf813b63c3a2798211af7",
+        "server.mjs": "be66e8f784c4f7927c0e033866b0cf262e3fabb5b827737df9bfa4b9d9061e06"
+      }
+    },
+    "PACKAGED-QA-01": {
+      "state": "OBSERVED",
+      "description": "Gelesener erster gepackter EXE-Selbsttest: WebGL vorhanden, API-Gast/LOVE/Fürsorge beobachtet, Weltcheckpoint gespeichert, Exit 0. Keine geprüften nativen UI-Eingaben.",
+      "artifact": "local-work/halveth-realms-qa-unpacked01/logs/desktop-last-run.json",
+      "sha256": "b87f8aba18f5b8930cb2f34f6e7dec34260def9bba8a8eb7bddf44d7c5dc9cba",
+      "appVersion": "0.2.0",
+      "packaged": true,
+      "status": "SELF_TEST_PASS",
+      "checkpointSaved": true,
+      "exitCode": 0,
+      "inputUiVerified": false,
+      "actionPath": "local-http-api"
+    },
+    "INSTALLER-CANDIDATE": {
+      "state": "OBSERVED",
+      "description": "Vorhandener NSIS-Installationskandidat; ein nachfolgender Neubau mit dem jüngsten Shutdown-Fix ist getrennt zu binden.",
+      "artifact": "releases/desktop/HALVETH-Realms-Setup-0.2.0-x64.exe",
+      "bytes": 112195231,
+      "sha256": "c269dea18c00e0b45cfc754e63e6d40f47bdd0d2021971321df8da4875f34c93"
+    },
+    "INSTALL-EXIT-0": {
+      "state": "STRONGLY_SUPPORTED",
+      "description": "Parent-Agent meldet Installation des NSIS-Kandidaten mit Exit 0. Diese Navigation hat den Installationsprozess nicht selbst wiederholt.",
+      "provenance": "Parent task message, current desktop build"
+    },
+    "TESTS-29": {
+      "state": "OBSERVED",
+      "description": "Eigener Toollauf npm test: 29 bestanden, 0 fehlgeschlagen; einschließlich Weltpersistenz, LOVE, Grafikoptionen und gemeinsam abgewartetem Shutdown.",
+      "command": "npm test",
+      "passed": 29,
+      "failed": 0,
+      "node": "24.18.0"
+    },
+    "MORROWIND-SEPARATE": {
+      "state": "OBSERVED",
+      "description": "HALVETH Realms liegt als eigenständiges Projekt außerhalb des früheren Morrowind-Modprojekts. Der Desktop-Baustein verändert oder beendet Morrowind nicht."
+    },
+    "ACCESSIBILITY-COVERAGE": {
+      "state": "OBSERVED",
+      "description": "Vorhandene beschriftete Bedienflächen, Tastaturbefehle und Display-/Pausentests; vollständige Hilfstechnologie- und Geräteabdeckung ist nicht geprüft.",
+      "artifacts": [
+        "public/index.html",
+        "tests/display-ui.test.mjs"
+      ]
+    },
+    "DELIVERY-L1": {
+      "state": "OBSERVED",
+      "description": "Elternbezug Auslieferung: gepackte EXE lädt WebGL und lokalen API-Spielzustand; entscheidungsrelevant für Startbarkeit.",
+      "sourceRefs": [
+        "PACKAGED-QA-01"
+      ]
+    },
+    "DELIVERY-L2": {
+      "state": "STRONGLY_SUPPORTED",
+      "description": "Elternbezug auslieferbares Paket: NSIS-Datei vorhanden, Installation Exit 0 gemeldet; endgültiger Neubau bleibt eigenständiger Kandidat.",
+      "sourceRefs": [
+        "INSTALLER-CANDIDATE",
+        "INSTALL-EXIT-0"
+      ]
+    },
+    "DELIVERY-L3": {
+      "state": "OBSERVED",
+      "description": "Elternbezug persistente Nutzung: 29 Tests schließen belegtes concurrent-close-Problem; finale Binary muss diesen Quellstand enthalten.",
+      "sourceRefs": [
+        "TESTS-29",
+        "SOURCE-DESKTOP-0.2.0"
+      ]
+    },
+    "DELIVERY-L4": {
+      "state": "UNKNOWN",
+      "description": "Elternbezug finale Übergabe: frischer installierter Native-QA-Lauf mit finalem Installer, eigenem Speichern/Schließen und Nachweis der übernommenen Weltstände steht beim Receipt noch aus."
+    },
+    "ACCESS-L1": {
+      "state": "OBSERVED",
+      "description": "Elternbezug Zugänglichkeit: benannte native und Spielmenüs sind vorhanden; strukturierter Bedienungsumfang ist begrenzt.",
+      "sourceRefs": [
+        "ACCESSIBILITY-COVERAGE"
+      ]
+    },
+    "ACCESS-L2": {
+      "state": "OBSERVED",
+      "description": "Elternbezug gerätespezifische Nutzung: Tests für echte Renderparameter, FPS-Limits und Pause liegen vor.",
+      "sourceRefs": [
+        "TESTS-29"
+      ]
+    },
+    "ACCESS-L3": {
+      "state": "UNKNOWN",
+      "description": "Elternbezug breitere Bedienbarkeit: Screenreader, alle Skalierungsstufen und verschiedene Eingabegeräte haben noch keine vollständige Prüfung."
+    },
+    "ACCESS-L4": {
+      "state": "UNKNOWN",
+      "description": "Elternbezug Produktionsreife: erreichbarer Folgeschritt ist eine konkrete Geräte-/Hilfstechnologie-Matrix; sie bleibt als spätere Prüfung erhalten."
+    },
+    "FRONTIER-FINAL-INSTALLED-QA": {
+      "state": "UNKNOWN",
+      "description": "Nächster kleiner Schritt: finalen Installer nach Shutdown-Fix neu bauen, installierte EXE prüfen, anschließend auslieferbare Hashes und tatsächlichen Bedienbefund festhalten."
+    },
+    "FRONTIER-ACCESSIBILITY": {
+      "state": "UNKNOWN",
+      "description": "Mit ausgewählten Geräten und Hilfstechnologien systematische Bedienprüfung wieder öffnen."
+    },
+    "DIAGONAL-DELIVERY-ACCESSIBILITY": {
+      "state": "INFERRED",
+      "description": "Gemeinsamer Referent ist Desktop 0.2 als lokal spielbarer Prototyp. Vergleichsmaßstab: Beitrag zur unmittelbar überprüfbaren Übergabe unter gleichem Buildstand. Quellen/Agenten sind ein korrelierter Projektcluster, keine unabhängigen Bestätigungen. Finaler Installationslauf ist jetzt näher erreichbar als vollständige Geräteabdeckung; beide sind reversibel, aber letztere hat höheren Aufwand. Keine kausale oder rechtliche Ableitung, keine Diagonalpunkte."
+    }
+  },
+  "navigationFrame": {
+    "schema": "halveth.status-quo-navigation-frame.v1",
+    "logicVersion": "3.5.1",
+    "entityVersion": "1.0.0",
+    "entityState": "STATUS_QUO_FROZEN",
+    "frameId": "HALVETH-REALMS:DESKTOP:0.2.0",
+    "project": {
+      "domainAdapter": "SOFTWARE_BUILD",
+      "objective": "HALVETH Realms 0.2 als installierbaren eigenen Windows-Spielprototyp mit erhaltener Welt und nachvollziehbarer Endprüfung übergeben.",
+      "objectOrReferent": "HALVETH Realms Desktop 0.2.0",
+      "scope": "Read-only Navigation des vorliegenden Buildstands; das Schreiben dieses separaten Receipts verändert weder Spielstände noch Installer, Original-Morrowind, frühere Receipts oder die eingefrorene Entity. Fertige Bau- und Installationsaktionen werden als bestehende Beobachtungen gebunden.",
+      "deliverableType": "DESKTOP_BUILD_NAVIGATION_RECEIPT",
+      "sourceRefs": [
+        "SOURCE-DESKTOP-0.2.0",
+        "PACKAGED-QA-01",
+        "INSTALLER-CANDIDATE",
+        "INSTALL-EXIT-0",
+        "TESTS-29",
+        "MORROWIND-SEPARATE"
+      ],
+      "acceptedBaselineRef": "BASELINE-0.1.0"
+    },
+    "scanPolicy": {
+      "horizontalMode": "FULL_DECLARED_ADAPTER_APERTURE",
+      "verticalPreviewDepth": 4,
+      "diagonalMode": "COMPLETE_MATERIAL_CANDIDATE_PAIR_GRAPH",
+      "selectiveDrillDepth": 4,
+      "noSelectiveDrillBeforeDiagonal": true,
+      "freezeMode": "VERSIONED_IMMUTABLE_BASELINE"
+    },
+    "axisRegistry": [
+      {
+        "axisId": "USER_OUTCOME",
+        "label": "Spielbarer eigener Desktop-Prototyp",
+        "definition": "Spielbarer eigener Desktop-Prototyp",
+        "layer": "SOFTWARE_DESKTOP_BUILD",
+        "scope": "HALVETH Realms 0.2.0, endlicher lokaler Prototyp; bestehende Originalprojekte und frühere Receipts bleiben erhalten.",
+        "sourceBasisRefs": [
+          "SOURCE-DESKTOP-0.2.0"
+        ],
+        "statusQuoRef": "BASELINE-0.1.0"
+      },
+      {
+        "axisId": "INTERFACE",
+        "label": "Native Oberfläche und 3D-Spiel",
+        "definition": "Native Oberfläche und 3D-Spiel",
+        "layer": "SOFTWARE_DESKTOP_BUILD",
+        "scope": "HALVETH Realms 0.2.0, endlicher lokaler Prototyp; bestehende Originalprojekte und frühere Receipts bleiben erhalten.",
+        "sourceBasisRefs": [
+          "SOURCE-DESKTOP-0.2.0"
+        ],
+        "statusQuoRef": "BASELINE-0.1.0"
+      },
+      {
+        "axisId": "STATE_DATA",
+        "label": "Weltstände und Erinnerungen",
+        "definition": "Weltstände und Erinnerungen",
+        "layer": "SOFTWARE_DESKTOP_BUILD",
+        "scope": "HALVETH Realms 0.2.0, endlicher lokaler Prototyp; bestehende Originalprojekte und frühere Receipts bleiben erhalten.",
+        "sourceBasisRefs": [
+          "SOURCE-DESKTOP-0.2.0"
+        ],
+        "statusQuoRef": "BASELINE-0.1.0"
+      },
+      {
+        "axisId": "INTEGRATION",
+        "label": "Integrierter Server und lokale Dialoge",
+        "definition": "Integrierter Server und lokale Dialoge",
+        "layer": "SOFTWARE_DESKTOP_BUILD",
+        "scope": "HALVETH Realms 0.2.0, endlicher lokaler Prototyp; bestehende Originalprojekte und frühere Receipts bleiben erhalten.",
+        "sourceBasisRefs": [
+          "SOURCE-DESKTOP-0.2.0"
+        ],
+        "statusQuoRef": "BASELINE-0.1.0"
+      },
+      {
+        "axisId": "FAILURE_RECOVERY",
+        "label": "Speichern, Neustart und Cachepflege",
+        "definition": "Speichern, Neustart und Cachepflege",
+        "layer": "SOFTWARE_DESKTOP_BUILD",
+        "scope": "HALVETH Realms 0.2.0, endlicher lokaler Prototyp; bestehende Originalprojekte und frühere Receipts bleiben erhalten.",
+        "sourceBasisRefs": [
+          "SOURCE-DESKTOP-0.2.0"
+        ],
+        "statusQuoRef": "BASELINE-0.1.0"
+      },
+      {
+        "axisId": "SECURITY_PRIVACY",
+        "label": "Reservierte Adapterachse außerhalb dieser Build-Navigation",
+        "definition": "Reservierte Adapterachse außerhalb dieser Build-Navigation",
+        "layer": "SOFTWARE_DESKTOP_BUILD",
+        "scope": "HALVETH Realms 0.2.0, endlicher lokaler Prototyp; bestehende Originalprojekte und frühere Receipts bleiben erhalten.",
+        "sourceBasisRefs": [
+          "SOURCE-DESKTOP-0.2.0"
+        ],
+        "statusQuoRef": "BASELINE-0.1.0"
+      },
+      {
+        "axisId": "ACCESSIBILITY",
+        "label": "Bedienbarkeit und Geräteabdeckung",
+        "definition": "Bedienbarkeit und Geräteabdeckung",
+        "layer": "SOFTWARE_DESKTOP_BUILD",
+        "scope": "HALVETH Realms 0.2.0, endlicher lokaler Prototyp; bestehende Originalprojekte und frühere Receipts bleiben erhalten.",
+        "sourceBasisRefs": [
+          "SOURCE-DESKTOP-0.2.0"
+        ],
+        "statusQuoRef": "BASELINE-0.1.0"
+      },
+      {
+        "axisId": "DELIVERY_OBSERVABILITY",
+        "label": "Installation und finale überprüfbare Übergabe",
+        "definition": "Installation und finale überprüfbare Übergabe",
+        "layer": "SOFTWARE_DESKTOP_BUILD",
+        "scope": "HALVETH Realms 0.2.0, endlicher lokaler Prototyp; bestehende Originalprojekte und frühere Receipts bleiben erhalten.",
+        "sourceBasisRefs": [
+          "SOURCE-DESKTOP-0.2.0"
+        ],
+        "statusQuoRef": "BASELINE-0.1.0"
+      }
+    ],
+    "axisEvaluations": [
+      {
+        "axisId": "USER_OUTCOME",
+        "state": "STABLE_WITHIN_COVERAGE",
+        "evidenceState": "OBSERVED",
+        "horizontalReceiptRefs": [
+          "PACKAGED-QA-01",
+          "MORROWIND-SEPARATE"
+        ],
+        "exclusionReason": null,
+        "verticalProbe": {
+          "state": "NOT_REQUIRED",
+          "completedDepth": 0,
+          "maximumDepth": 4,
+          "layerReceiptRefs": [],
+          "criticalUnknownCount": 0,
+          "deepDivePurpose": null
+        },
+        "priorityVector": {
+          "objectiveRelevance": 0,
+          "criticality": 0,
+          "evidenceStrength": 0,
+          "authorizedActionability": 0,
+          "informationGain": 0,
+          "repairValue": 0,
+          "effortCost": 0,
+          "actionRisk": 0
+        },
+        "frontierRef": null
+      },
+      {
+        "axisId": "INTERFACE",
+        "state": "STABLE_WITHIN_COVERAGE",
+        "evidenceState": "OBSERVED",
+        "horizontalReceiptRefs": [
+          "PACKAGED-QA-01",
+          "ACCESSIBILITY-COVERAGE"
+        ],
+        "exclusionReason": null,
+        "verticalProbe": {
+          "state": "NOT_REQUIRED",
+          "completedDepth": 0,
+          "maximumDepth": 4,
+          "layerReceiptRefs": [],
+          "criticalUnknownCount": 0,
+          "deepDivePurpose": null
+        },
+        "priorityVector": {
+          "objectiveRelevance": 0,
+          "criticality": 0,
+          "evidenceStrength": 0,
+          "authorizedActionability": 0,
+          "informationGain": 0,
+          "repairValue": 0,
+          "effortCost": 0,
+          "actionRisk": 0
+        },
+        "frontierRef": null
+      },
+      {
+        "axisId": "STATE_DATA",
+        "state": "STABLE_WITHIN_COVERAGE",
+        "evidenceState": "OBSERVED",
+        "horizontalReceiptRefs": [
+          "TESTS-29",
+          "PACKAGED-QA-01"
+        ],
+        "exclusionReason": null,
+        "verticalProbe": {
+          "state": "NOT_REQUIRED",
+          "completedDepth": 0,
+          "maximumDepth": 4,
+          "layerReceiptRefs": [],
+          "criticalUnknownCount": 0,
+          "deepDivePurpose": null
+        },
+        "priorityVector": {
+          "objectiveRelevance": 0,
+          "criticality": 0,
+          "evidenceStrength": 0,
+          "authorizedActionability": 0,
+          "informationGain": 0,
+          "repairValue": 0,
+          "effortCost": 0,
+          "actionRisk": 0
+        },
+        "frontierRef": null
+      },
+      {
+        "axisId": "INTEGRATION",
+        "state": "STABLE_WITHIN_COVERAGE",
+        "evidenceState": "OBSERVED",
+        "horizontalReceiptRefs": [
+          "PACKAGED-QA-01",
+          "SOURCE-DESKTOP-0.2.0"
+        ],
+        "exclusionReason": null,
+        "verticalProbe": {
+          "state": "NOT_REQUIRED",
+          "completedDepth": 0,
+          "maximumDepth": 4,
+          "layerReceiptRefs": [],
+          "criticalUnknownCount": 0,
+          "deepDivePurpose": null
+        },
+        "priorityVector": {
+          "objectiveRelevance": 0,
+          "criticality": 0,
+          "evidenceStrength": 0,
+          "authorizedActionability": 0,
+          "informationGain": 0,
+          "repairValue": 0,
+          "effortCost": 0,
+          "actionRisk": 0
+        },
+        "frontierRef": null
+      },
+      {
+        "axisId": "FAILURE_RECOVERY",
+        "state": "STABLE_WITHIN_COVERAGE",
+        "evidenceState": "OBSERVED",
+        "horizontalReceiptRefs": [
+          "TESTS-29",
+          "SOURCE-DESKTOP-0.2.0"
+        ],
+        "exclusionReason": null,
+        "verticalProbe": {
+          "state": "NOT_REQUIRED",
+          "completedDepth": 0,
+          "maximumDepth": 4,
+          "layerReceiptRefs": [],
+          "criticalUnknownCount": 0,
+          "deepDivePurpose": null
+        },
+        "priorityVector": {
+          "objectiveRelevance": 0,
+          "criticality": 0,
+          "evidenceStrength": 0,
+          "authorizedActionability": 0,
+          "informationGain": 0,
+          "repairValue": 0,
+          "effortCost": 0,
+          "actionRisk": 0
+        },
+        "frontierRef": null
+      },
+      {
+        "axisId": "SECURITY_PRIVACY",
+        "state": "EXCLUDED_WITH_REASON",
+        "evidenceState": "UNKNOWN",
+        "horizontalReceiptRefs": [],
+        "exclusionReason": "Dieser Auftrag ist Softwarebau und eine nachträgliche Navigationsaufzeichnung. Eine Security-Analyse ist nicht beauftragt; die Pflichtachse bleibt ausdrücklich sichtbar, ohne zusätzliche Prüfungen oder Freigabeverfahren.",
+        "verticalProbe": {
+          "state": "NOT_REQUIRED",
+          "completedDepth": 0,
+          "maximumDepth": 4,
+          "layerReceiptRefs": [],
+          "criticalUnknownCount": 0,
+          "deepDivePurpose": null
+        },
+        "priorityVector": {
+          "objectiveRelevance": 0,
+          "criticality": 0,
+          "evidenceStrength": 0,
+          "authorizedActionability": 0,
+          "informationGain": 0,
+          "repairValue": 0,
+          "effortCost": 0,
+          "actionRisk": 0
+        },
+        "frontierRef": null
+      },
+      {
+        "axisId": "ACCESSIBILITY",
+        "state": "UNKNOWN_MATERIAL",
+        "evidenceState": "UNKNOWN",
+        "horizontalReceiptRefs": [
+          "ACCESSIBILITY-COVERAGE"
+        ],
+        "exclusionReason": null,
+        "verticalProbe": {
+          "state": "BOUNDARY",
+          "completedDepth": 4,
+          "maximumDepth": 4,
+          "layerReceiptRefs": [
+            "ACCESS-L1",
+            "ACCESS-L2",
+            "ACCESS-L3",
+            "ACCESS-L4"
+          ],
+          "criticalUnknownCount": 2,
+          "deepDivePurpose": "MULTI_APERTURE_FIELD_PROBE"
+        },
+        "priorityVector": {
+          "objectiveRelevance": 3,
+          "criticality": 2,
+          "evidenceStrength": 1,
+          "authorizedActionability": 2,
+          "informationGain": 3,
+          "repairValue": 2,
+          "effortCost": 3,
+          "actionRisk": 0
+        },
+        "frontierRef": "FRONTIER-ACCESSIBILITY"
+      },
+      {
+        "axisId": "DELIVERY_OBSERVABILITY",
+        "state": "FLAGGED_MATERIAL",
+        "evidenceState": "STRONGLY_SUPPORTED",
+        "horizontalReceiptRefs": [
+          "PACKAGED-QA-01",
+          "INSTALLER-CANDIDATE",
+          "INSTALL-EXIT-0",
+          "TESTS-29"
+        ],
+        "exclusionReason": null,
+        "verticalProbe": {
+          "state": "BOUNDARY",
+          "completedDepth": 4,
+          "maximumDepth": 4,
+          "layerReceiptRefs": [
+            "DELIVERY-L1",
+            "DELIVERY-L2",
+            "DELIVERY-L3",
+            "DELIVERY-L4"
+          ],
+          "criticalUnknownCount": 1,
+          "deepDivePurpose": "MULTI_APERTURE_FIELD_PROBE"
+        },
+        "priorityVector": {
+          "objectiveRelevance": 4,
+          "criticality": 4,
+          "evidenceStrength": 4,
+          "authorizedActionability": 4,
+          "informationGain": 3,
+          "repairValue": 4,
+          "effortCost": 1,
+          "actionRisk": 0
+        },
+        "frontierRef": "FRONTIER-FINAL-INSTALLED-QA"
+      }
+    ],
+    "diagonalRegistry": [
+      {
+        "edgeId": "DELIVERY-ACCESSIBILITY",
+        "leftAxisId": "ACCESSIBILITY",
+        "rightAxisId": "DELIVERY_OBSERVABILITY",
+        "comparisonQuestion": "Welcher reversible Folgeschritt verbessert die unmittelbar überprüfbare Prototyp-Übergabe auf demselben Buildstand zuerst?",
+        "relationType": "COLLECTIVE_SEARCH_RELATION_CANDIDATE",
+        "sourceBasisRefs": [
+          "DIAGONAL-DELIVERY-ACCESSIBILITY"
+        ]
+      }
+    ],
+    "diagonalEvaluations": [
+      {
+        "edgeId": "DELIVERY-ACCESSIBILITY",
+        "state": "EVALUATED",
+        "evidenceState": "INFERRED",
+        "evidenceRefs": [
+          "DIAGONAL-DELIVERY-ACCESSIBILITY"
+        ],
+        "leftDelta": 0,
+        "rightDelta": 0,
+        "exclusionReason": null
+      }
+    ],
+    "decision": {
+      "outcome": "SELECT_FRONTIER",
+      "selectedAxisId": "DELIVERY_OBSERVABILITY",
+      "nextOperator": "EXTREMUM_NAVIGATION",
+      "preservedAxisIds": [
+        "USER_OUTCOME",
+        "INTERFACE",
+        "STATE_DATA",
+        "INTEGRATION",
+        "FAILURE_RECOVERY",
+        "SECURITY_PRIVACY",
+        "ACCESSIBILITY",
+        "DELIVERY_OBSERVABILITY"
+      ],
+      "rationale": "Ausgewählt ist die finale überprüfbare Desktop-Auslieferung. Der ordinal berechnete Suchvorrang ist weder Qualitätsbeweis noch Wirkungsclaim. Die nächste Durchführung liegt beim Parent-Agent; finale Native-QA, Produktionskunst/-audio, breiter Multiplayer und Signierung werden durch dieses Receipt nicht als erledigt bezeichnet."
+    },
+    "authority": {
+      "mode": "LOCAL_READ_ONLY_ANALYSIS",
+      "sourceSystemEffects": 0,
+      "externalNetworkEffects": 0,
+      "mutationAuthorized": false
+    },
+    "recordedAt": "2026-09-19T00:18:46.008Z"
+  },
+  "validatedNavigationReceipt": {
+    "schema": "halveth.status-quo-navigation-receipt.v1",
+    "logicVersion": "3.5.1",
+    "entityVersion": "1.0.0",
+    "entityState": "STATUS_QUO_FROZEN",
+    "frameId": "HALVETH-REALMS:DESKTOP:0.2.0",
+    "project": {
+      "domainAdapter": "SOFTWARE_BUILD",
+      "objective": "HALVETH Realms 0.2 als installierbaren eigenen Windows-Spielprototyp mit erhaltener Welt und nachvollziehbarer Endprüfung übergeben.",
+      "objectOrReferent": "HALVETH Realms Desktop 0.2.0",
+      "scope": "Read-only Navigation des vorliegenden Buildstands; das Schreiben dieses separaten Receipts verändert weder Spielstände noch Installer, Original-Morrowind, frühere Receipts oder die eingefrorene Entity. Fertige Bau- und Installationsaktionen werden als bestehende Beobachtungen gebunden.",
+      "deliverableType": "DESKTOP_BUILD_NAVIGATION_RECEIPT",
+      "sourceRefs": [
+        "SOURCE-DESKTOP-0.2.0",
+        "PACKAGED-QA-01",
+        "INSTALLER-CANDIDATE",
+        "INSTALL-EXIT-0",
+        "TESTS-29",
+        "MORROWIND-SEPARATE"
+      ],
+      "acceptedBaselineRef": "BASELINE-0.1.0"
+    },
+    "scanPolicy": {
+      "horizontalMode": "FULL_DECLARED_ADAPTER_APERTURE",
+      "verticalPreviewDepth": 4,
+      "diagonalMode": "COMPLETE_MATERIAL_CANDIDATE_PAIR_GRAPH",
+      "selectiveDrillDepth": 4,
+      "noSelectiveDrillBeforeDiagonal": true,
+      "freezeMode": "VERSIONED_IMMUTABLE_BASELINE"
+    },
+    "adapterRequiredAxisIds": [
+      "USER_OUTCOME",
+      "INTERFACE",
+      "STATE_DATA",
+      "INTEGRATION",
+      "FAILURE_RECOVERY",
+      "SECURITY_PRIVACY",
+      "ACCESSIBILITY",
+      "DELIVERY_OBSERVABILITY"
+    ],
+    "registeredAxisIds": [
+      "ACCESSIBILITY",
+      "DELIVERY_OBSERVABILITY",
+      "FAILURE_RECOVERY",
+      "INTEGRATION",
+      "INTERFACE",
+      "SECURITY_PRIVACY",
+      "STATE_DATA",
+      "USER_OUTCOME"
+    ],
+    "materialCandidateAxisIds": [
+      "ACCESSIBILITY",
+      "DELIVERY_OBSERVABILITY"
+    ],
+    "axisResults": [
+      {
+        "axisId": "ACCESSIBILITY",
+        "state": "UNKNOWN_MATERIAL",
+        "evidenceState": "UNKNOWN",
+        "horizontalReceiptRefs": [
+          "ACCESSIBILITY-COVERAGE"
+        ],
+        "exclusionReason": null,
+        "verticalProbe": {
+          "state": "BOUNDARY",
+          "completedDepth": 4,
+          "maximumDepth": 4,
+          "layerReceiptRefs": [
+            "ACCESS-L1",
+            "ACCESS-L2",
+            "ACCESS-L3",
+            "ACCESS-L4"
+          ],
+          "criticalUnknownCount": 2,
+          "deepDivePurpose": "MULTI_APERTURE_FIELD_PROBE"
+        },
+        "priorityVector": {
+          "objectiveRelevance": 3,
+          "criticality": 2,
+          "evidenceStrength": 1,
+          "authorizedActionability": 2,
+          "informationGain": 3,
+          "repairValue": 2,
+          "effortCost": 3,
+          "actionRisk": 0
+        },
+        "frontierRef": "FRONTIER-ACCESSIBILITY",
+        "basePriorityScore": 10,
+        "diagonalDelta": 0,
+        "collectiveScore": 10
+      },
+      {
+        "axisId": "DELIVERY_OBSERVABILITY",
+        "state": "FLAGGED_MATERIAL",
+        "evidenceState": "STRONGLY_SUPPORTED",
+        "horizontalReceiptRefs": [
+          "PACKAGED-QA-01",
+          "INSTALLER-CANDIDATE",
+          "INSTALL-EXIT-0",
+          "TESTS-29"
+        ],
+        "exclusionReason": null,
+        "verticalProbe": {
+          "state": "BOUNDARY",
+          "completedDepth": 4,
+          "maximumDepth": 4,
+          "layerReceiptRefs": [
+            "DELIVERY-L1",
+            "DELIVERY-L2",
+            "DELIVERY-L3",
+            "DELIVERY-L4"
+          ],
+          "criticalUnknownCount": 1,
+          "deepDivePurpose": "MULTI_APERTURE_FIELD_PROBE"
+        },
+        "priorityVector": {
+          "objectiveRelevance": 4,
+          "criticality": 4,
+          "evidenceStrength": 4,
+          "authorizedActionability": 4,
+          "informationGain": 3,
+          "repairValue": 4,
+          "effortCost": 1,
+          "actionRisk": 0
+        },
+        "frontierRef": "FRONTIER-FINAL-INSTALLED-QA",
+        "basePriorityScore": 22,
+        "diagonalDelta": 0,
+        "collectiveScore": 22
+      },
+      {
+        "axisId": "FAILURE_RECOVERY",
+        "state": "STABLE_WITHIN_COVERAGE",
+        "evidenceState": "OBSERVED",
+        "horizontalReceiptRefs": [
+          "TESTS-29",
+          "SOURCE-DESKTOP-0.2.0"
+        ],
+        "exclusionReason": null,
+        "verticalProbe": {
+          "state": "NOT_REQUIRED",
+          "completedDepth": 0,
+          "maximumDepth": 4,
+          "layerReceiptRefs": [],
+          "criticalUnknownCount": 0,
+          "deepDivePurpose": null
+        },
+        "priorityVector": {
+          "objectiveRelevance": 0,
+          "criticality": 0,
+          "evidenceStrength": 0,
+          "authorizedActionability": 0,
+          "informationGain": 0,
+          "repairValue": 0,
+          "effortCost": 0,
+          "actionRisk": 0
+        },
+        "frontierRef": null,
+        "basePriorityScore": 0,
+        "diagonalDelta": 0,
+        "collectiveScore": 0
+      },
+      {
+        "axisId": "INTEGRATION",
+        "state": "STABLE_WITHIN_COVERAGE",
+        "evidenceState": "OBSERVED",
+        "horizontalReceiptRefs": [
+          "PACKAGED-QA-01",
+          "SOURCE-DESKTOP-0.2.0"
+        ],
+        "exclusionReason": null,
+        "verticalProbe": {
+          "state": "NOT_REQUIRED",
+          "completedDepth": 0,
+          "maximumDepth": 4,
+          "layerReceiptRefs": [],
+          "criticalUnknownCount": 0,
+          "deepDivePurpose": null
+        },
+        "priorityVector": {
+          "objectiveRelevance": 0,
+          "criticality": 0,
+          "evidenceStrength": 0,
+          "authorizedActionability": 0,
+          "informationGain": 0,
+          "repairValue": 0,
+          "effortCost": 0,
+          "actionRisk": 0
+        },
+        "frontierRef": null,
+        "basePriorityScore": 0,
+        "diagonalDelta": 0,
+        "collectiveScore": 0
+      },
+      {
+        "axisId": "INTERFACE",
+        "state": "STABLE_WITHIN_COVERAGE",
+        "evidenceState": "OBSERVED",
+        "horizontalReceiptRefs": [
+          "PACKAGED-QA-01",
+          "ACCESSIBILITY-COVERAGE"
+        ],
+        "exclusionReason": null,
+        "verticalProbe": {
+          "state": "NOT_REQUIRED",
+          "completedDepth": 0,
+          "maximumDepth": 4,
+          "layerReceiptRefs": [],
+          "criticalUnknownCount": 0,
+          "deepDivePurpose": null
+        },
+        "priorityVector": {
+          "objectiveRelevance": 0,
+          "criticality": 0,
+          "evidenceStrength": 0,
+          "authorizedActionability": 0,
+          "informationGain": 0,
+          "repairValue": 0,
+          "effortCost": 0,
+          "actionRisk": 0
+        },
+        "frontierRef": null,
+        "basePriorityScore": 0,
+        "diagonalDelta": 0,
+        "collectiveScore": 0
+      },
+      {
+        "axisId": "SECURITY_PRIVACY",
+        "state": "EXCLUDED_WITH_REASON",
+        "evidenceState": "UNKNOWN",
+        "horizontalReceiptRefs": [],
+        "exclusionReason": "Dieser Auftrag ist Softwarebau und eine nachträgliche Navigationsaufzeichnung. Eine Security-Analyse ist nicht beauftragt; die Pflichtachse bleibt ausdrücklich sichtbar, ohne zusätzliche Prüfungen oder Freigabeverfahren.",
+        "verticalProbe": {
+          "state": "NOT_REQUIRED",
+          "completedDepth": 0,
+          "maximumDepth": 4,
+          "layerReceiptRefs": [],
+          "criticalUnknownCount": 0,
+          "deepDivePurpose": null
+        },
+        "priorityVector": {
+          "objectiveRelevance": 0,
+          "criticality": 0,
+          "evidenceStrength": 0,
+          "authorizedActionability": 0,
+          "informationGain": 0,
+          "repairValue": 0,
+          "effortCost": 0,
+          "actionRisk": 0
+        },
+        "frontierRef": null,
+        "basePriorityScore": 0,
+        "diagonalDelta": 0,
+        "collectiveScore": 0
+      },
+      {
+        "axisId": "STATE_DATA",
+        "state": "STABLE_WITHIN_COVERAGE",
+        "evidenceState": "OBSERVED",
+        "horizontalReceiptRefs": [
+          "TESTS-29",
+          "PACKAGED-QA-01"
+        ],
+        "exclusionReason": null,
+        "verticalProbe": {
+          "state": "NOT_REQUIRED",
+          "completedDepth": 0,
+          "maximumDepth": 4,
+          "layerReceiptRefs": [],
+          "criticalUnknownCount": 0,
+          "deepDivePurpose": null
+        },
+        "priorityVector": {
+          "objectiveRelevance": 0,
+          "criticality": 0,
+          "evidenceStrength": 0,
+          "authorizedActionability": 0,
+          "informationGain": 0,
+          "repairValue": 0,
+          "effortCost": 0,
+          "actionRisk": 0
+        },
+        "frontierRef": null,
+        "basePriorityScore": 0,
+        "diagonalDelta": 0,
+        "collectiveScore": 0
+      },
+      {
+        "axisId": "USER_OUTCOME",
+        "state": "STABLE_WITHIN_COVERAGE",
+        "evidenceState": "OBSERVED",
+        "horizontalReceiptRefs": [
+          "PACKAGED-QA-01",
+          "MORROWIND-SEPARATE"
+        ],
+        "exclusionReason": null,
+        "verticalProbe": {
+          "state": "NOT_REQUIRED",
+          "completedDepth": 0,
+          "maximumDepth": 4,
+          "layerReceiptRefs": [],
+          "criticalUnknownCount": 0,
+          "deepDivePurpose": null
+        },
+        "priorityVector": {
+          "objectiveRelevance": 0,
+          "criticality": 0,
+          "evidenceStrength": 0,
+          "authorizedActionability": 0,
+          "informationGain": 0,
+          "repairValue": 0,
+          "effortCost": 0,
+          "actionRisk": 0
+        },
+        "frontierRef": null,
+        "basePriorityScore": 0,
+        "diagonalDelta": 0,
+        "collectiveScore": 0
+      }
+    ],
+    "diagonalPairCoverage": {
+      "expectedPairCount": 1,
+      "registeredPairCount": 1,
+      "evaluatedPairCount": 1,
+      "state": "COMPLETE_FOR_MATERIAL_CANDIDATE_GRAPH"
+    },
+    "coverageState": "DECLARED_GAPS_PRESERVED",
+    "prioritySemantics": "ORDINAL_SEARCH_HEURISTIC_NOT_FACT_OR_IMPACT",
+    "computedOutcome": "SELECT_FRONTIER",
+    "selectedAxisId": "DELIVERY_OBSERVABILITY",
+    "selectedFrontierRef": "FRONTIER-FINAL-INSTALLED-QA",
+    "nextOperator": "EXTREMUM_NAVIGATION",
+    "decision": {
+      "outcome": "SELECT_FRONTIER",
+      "selectedAxisId": "DELIVERY_OBSERVABILITY",
+      "nextOperator": "EXTREMUM_NAVIGATION",
+      "preservedAxisIds": [
+        "USER_OUTCOME",
+        "INTERFACE",
+        "STATE_DATA",
+        "INTEGRATION",
+        "FAILURE_RECOVERY",
+        "SECURITY_PRIVACY",
+        "ACCESSIBILITY",
+        "DELIVERY_OBSERVABILITY"
+      ],
+      "rationale": "Ausgewählt ist die finale überprüfbare Desktop-Auslieferung. Der ordinal berechnete Suchvorrang ist weder Qualitätsbeweis noch Wirkungsclaim. Die nächste Durchführung liegt beim Parent-Agent; finale Native-QA, Produktionskunst/-audio, breiter Multiplayer und Signierung werden durch dieses Receipt nicht als erledigt bezeichnet."
+    },
+    "authority": {
+      "mode": "LOCAL_READ_ONLY_ANALYSIS",
+      "sourceSystemEffects": 0,
+      "externalNetworkEffects": 0,
+      "mutationAuthorized": false
+    },
+    "recordedAt": "2026-09-19T00:18:46.008Z",
+    "freezeState": "ENTITY_V1_0_0_IMMUTABLE_PROJECT_RECEIPTS_APPEND_SEPARATELY",
+    "claimCeiling": "BOUND_MULTI_APERTURE_NAVIGATION_DECISION_ONLY",
+    "finding": false,
+    "receiptDigest": "sha256:c522cfdbf7a8ecd183fc870b08278b459b4b27cafcba972c4bdce03d8430d4b3"
+  },
+  "openFrontiers": [
+    {
+      "id": "PRODUCTION_ART",
+      "axisId": "INTERFACE",
+      "state": "HOLD",
+      "reason": "Eigenständige prozedurale Kunst ist vorhanden; umfassende Produktionsart ist noch nicht geliefert.",
+      "reopenTrigger": "Konkreter Asset- und Animationsauftrag mit Stil- und Leistungsziel."
+    },
+    {
+      "id": "PRODUCTION_AUDIO",
+      "axisId": "INTERFACE",
+      "state": "HOLD",
+      "reason": "Ein umfassendes Musik-, Stimmen- und Sounddesign ist nicht als geliefert gebunden.",
+      "reopenTrigger": "Eigenständiger Audioauftrag mit Assetherkunft und Hörprüfung."
+    },
+    {
+      "id": "FINAL_NATIVE_QA",
+      "axisId": "DELIVERY_OBSERVABILITY",
+      "state": "ACTIVE",
+      "reason": "Erste gepackte EXE besteht API-/WebGL-Smoke; finaler installierter Build samt nativer Bedienprüfung folgt.",
+      "reopenTrigger": "Finaler Installer mit gebundenem Runtime-Receipt und Bedienbelegen."
+    },
+    {
+      "id": "PUBLIC_MULTIPLAYER",
+      "axisId": "INTEGRATION",
+      "state": "HOLD",
+      "reason": "Zehn lokale Gast-Sessions sind getestet; öffentlicher Dienst, Langzeitlast und Netzbetrieb bleiben offen.",
+      "reopenTrigger": "Gesonderter konkreter Mehrspielerbetrieb mit definierten Betriebszielen."
+    },
+    {
+      "id": "CODE_SIGNING",
+      "axisId": "DELIVERY_OBSERVABILITY",
+      "state": "HOLD",
+      "reason": "Code-Signierung ist nicht als abgeschlossen gebunden.",
+      "reopenTrigger": "Vorhandenes Herausgeberzertifikat und expliziter Signierauftrag."
+    }
+  ],
+  "finiteOutcome": "RETURN_HEALTHY_PARENT",
+  "healthyParent": "Eigenständiger spielbarer Desktop-Kandidat und vorherige Sourcefreigabe bleiben erhalten.",
+  "nextAction": "Parent finalisiert neu gebaute installierte EXE und native QA; dieses Receipt bleibt als zeitgebundener Vor-Endprüfungsstand erhalten.",
+  "claimCeiling": "BOUND_MULTI_APERTURE_NAVIGATION_DECISION_ONLY"
+}

@@ -1,0 +1,15 @@
+import { Resvg } from '@resvg/resvg-js';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const source = await readFile(resolve(root, 'assets/icon.svg'), 'utf8');
+await mkdir(resolve(root, 'assets'), { recursive: true });
+const sizes = [16, 24, 32, 48, 64, 128, 256];
+const images = sizes.map(width => new Resvg(source, { fitTo: { mode: 'width', value: width } }).render().asPng());
+const header = Buffer.alloc(6 + sizes.length * 16); header.writeUInt16LE(1, 2); header.writeUInt16LE(sizes.length, 4);
+let offset = header.length;
+images.forEach((image, i) => { const row = 6 + i * 16, size = sizes[i]; header[row] = size === 256 ? 0 : size; header[row+1] = header[row]; header.writeUInt16LE(1, row+4); header.writeUInt16LE(32, row+6); header.writeUInt32LE(image.length, row+8); header.writeUInt32LE(offset, row+12); offset += image.length; });
+await writeFile(resolve(root, 'assets/icon.ico'), Buffer.concat([header, ...images]));
+await writeFile(resolve(root, 'assets/icon.png'), new Resvg(source, { fitTo: { mode: 'width', value: 512 } }).render().asPng());
+console.log('Original Scarlet Heart icon rendered at seven Windows icon sizes plus 512px PNG.');

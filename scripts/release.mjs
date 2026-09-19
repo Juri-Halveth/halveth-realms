@@ -6,9 +6,9 @@ import { fileURLToPath } from 'node:url';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const pkg=JSON.parse(await readFile(resolve(root,'package.json'),'utf8'));
-const dirs=new Set(['public','shared','scripts','data','docs','tests','chain','.github']);
-const roots=new Set(['README.md','LICENSE','THIRD-PARTY-NOTICES.md','CONTRIBUTING.md','API-CONTRACT.md','package.json','server.mjs','START.cmd','STOP.cmd','.gitignore','.gitattributes','BUILD-RESULT.json']);
-const suffix=/\.(mjs|js|css|html|json|md|txt|svg|sol|yml|yaml|cmd)$/i;
+const dirs=new Set(['public','shared','scripts','data','docs','tests','chain','.github','desktop','assets']);
+const roots=new Set(['README.md','LICENSE','THIRD-PARTY-NOTICES.md','CONTRIBUTING.md','API-CONTRACT.md','package.json','package-lock.json','electron-builder.yml','server.mjs','START.cmd','STOP.cmd','.gitignore','.gitattributes','BUILD-RESULT.json']);
+const suffix=/\.(mjs|cjs|js|css|html|json|md|txt|svg|png|ico|sol|yml|yaml|cmd)$/i;
 const rows=[];
 async function walk(path){
   for(const name of (await readdir(path)).sort()){

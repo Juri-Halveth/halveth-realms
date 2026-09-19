@@ -1,0 +1,40 @@
+appId: de.halveth.realms
+productName: HALVETH Realms
+copyright: Copyright 2026 HALVETH Realms contributors
+asar: true
+npmRebuild: false
+directories:
+  output: releases/desktop
+  buildResources: assets
+files:
+  - desktop/**/*
+  - server.mjs
+  - shared/**/*.mjs
+  - public/**/*
+  - data/**/*.json
+  - assets/icon.ico
+  - assets/icon.png
+  - LICENSE
+  - THIRD-PARTY-NOTICES.md
+  - package.json
+  - '!**/.local/**'
+  - '!**/node_modules/**'
+win:
+  target: nsis
+  icon: assets/icon.ico
+  executableName: HALVETH Realms
+  requestedExecutionLevel: asInvoker
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: HALVETH Realms
+  uninstallDisplayName: HALVETH Realms
+  deleteAppDataOnUninstall: false
+  runAfterFinish: false
+  installerIcon: assets/icon.ico
+  uninstallerIcon: assets/icon.ico
+  artifactName: HALVETH-Realms-Setup-${version}-${arch}.${ext}

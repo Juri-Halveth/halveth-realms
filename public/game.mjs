@@ -5,6 +5,11 @@ const $ = id => document.getElementById(id);
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 const TAU = Math.PI * 2;
 const sessionKey = 'halveth-realms-session';
+const preferencesKey = 'halveth-realms-display-v1';
+const displayDefaults = Object.freeze({ schemaVersion: 1, resolutionScale: 1, shadowSize: 2048, frameLimit: 60, showFps: false });
+const graphicsPresets = Object.freeze({ light: { resolutionScale: .75, shadowSize: 0, frameLimit: 30 }, balanced: { resolutionScale: 1, shadowSize: 2048, frameLimit: 60 }, detailed: { resolutionScale: 1.25, shadowSize: 4096, frameLimit: 60 } });
+let preferences = { ...displayDefaults }, preferenceSaveChain = Promise.resolve();
+let hasRenderedFrame = false, paused = false, windowFocused = document.hasFocus(), needsSingleFrame = false, nextRenderAt = 0, fpsFrames = 0, fpsSince = 0, measuredFps = null;
 let world, session, renderer, scene, camera, environment, ocean, portal, sun, skyLight;
 let yaw = 0, pitch = -.04, altitude = 0, flight = false, flightBusy = false, desiredFlight = false, lastFlightSent = 0, flightTimer;
 let player = { x: 0, z: 36 }, lastFrame = 0, elapsed = 0, lastMoveSent = 0, lastMapUI = 0;
@@ -14,12 +19,85 @@ const landmarkModels = new Set();
 let colliders = [], fireflies = [], birds, touchFlight = false, toastTimer;
 const held = new Set();
 const npcMessages = new Map();
-const panel = $('side-panel'), help = $('help-panel');
+const panel = $('side-panel'), help = $('help-panel'), pausePanel = $('pause-panel');
 const v = new THREE.Vector3(), dummy = new THREE.Object3D();
 const materials = {};
 
 function textNode(tag, text, className) { const e = document.createElement(tag); e.textContent = text; if (className) e.className = className; return e; }
 function toast(message, duration = 4200) { $('toast').textContent = message; $('toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').hidden = true, duration); }
+function normalizePreferences(value) {
+  const result = { ...displayDefaults }; if (!value || value.schemaVersion !== 1) return result;
+  if (Number.isFinite(value.resolutionScale) && value.resolutionScale >= .5 && value.resolutionScale <= 1.25 && Math.abs(value.resolutionScale * 20 - Math.round(value.resolutionScale * 20)) < .0001) result.resolutionScale = value.resolutionScale;
+  if ([0, 1024, 2048, 4096].includes(value.shadowSize)) result.shadowSize = value.shadowSize;
+  if ([0, 30, 60, 120].includes(value.frameLimit)) result.frameLimit = value.frameLimit;
+  if (typeof value.showFps === 'boolean') result.showFps = value.showFps;
+  return result;
+}
+async function loadPreferences() {
+  const desktop = window.halvethDesktop?.isDesktop === true;
+  for (const badge of document.querySelectorAll('[data-platform-badge]')) badge.textContent = desktop ? 'DESKTOP EDITION' : 'LOCAL BROWSER';
+  try {
+    const saved = desktop && typeof window.halvethDesktop.getPreferences === 'function' ? await window.halvethDesktop.getPreferences() : JSON.parse(localStorage.getItem(preferencesKey));
+    preferences = normalizePreferences(saved);
+    $('preferences-status').textContent = desktop ? 'Anzeigeprofil wird lokal in dieser Desktop-App gespeichert, getrennt von deinen Welten.' : 'Anzeigeprofil wird lokal in diesem Browser gespeichert, getrennt von deinen Welten.';
+  } catch { preferences = { ...displayDefaults }; $('preferences-status').textContent = 'Das gespeicherte Anzeigeprofil konnte nicht geladen werden. Der Standard ist aktiv.'; }
+}
+function savePreferences() {
+  const snapshot = { ...preferences };
+  preferenceSaveChain = preferenceSaveChain.catch(() => {}).then(async () => {
+    try {
+      if (window.halvethDesktop?.isDesktop === true && typeof window.halvethDesktop.setPreferences === 'function') await window.halvethDesktop.setPreferences(snapshot);
+      else localStorage.setItem(preferencesKey, JSON.stringify(snapshot));
+      $('preferences-status').textContent = 'Anzeigeprofil lokal gespeichert. Dein Weltstand bleibt unverändert.';
+    } catch { $('preferences-status').textContent = 'Einstellungen sind für diese Sitzung aktiv; das lokale Speichern ist fehlgeschlagen.'; }
+  });
+}
+function selectedPreset() { return Object.entries(graphicsPresets).find(([, p]) => p.resolutionScale === preferences.resolutionScale && p.shadowSize === preferences.shadowSize && p.frameLimit === preferences.frameLimit)?.[0] || 'custom'; }
+function updateGraphicsUI() {
+  $('graphics-preset').value = selectedPreset(); $('resolution-scale').value = Math.round(preferences.resolutionScale * 100); $('resolution-value').value = `${Math.round(preferences.resolutionScale * 100)} %`; $('shadow-detail').value = preferences.shadowSize; $('frame-limit').value = preferences.frameLimit; $('show-fps').checked = preferences.showFps; $('fps-meter').hidden = !preferences.showFps;
+  $('preset-description').textContent = `${Math.round(preferences.resolutionScale * 100)} % Auflösung · ${preferences.shadowSize ? `${preferences.shadowSize}er Schatten` : 'Schatten aus'} · ${preferences.frameLimit ? `Ziel ${preferences.frameLimit} FPS` : 'Bildschirmfrequenz'}.`;
+  updateGraphicsReadout();
+}
+function updateGraphicsReadout() {
+  if (!renderer) return;
+  const size = sun?.castShadow ? sun.shadow.mapSize.x : 0;
+  $('render-resolution').textContent = `${renderer.domElement.width} × ${renderer.domElement.height} Pixel${size ? ` · Schatten ${size}²` : ' · Schatten aus'}`;
+  const suspended = document.hidden || !windowFocused || paused;
+  $('render-performance').textContent = suspended ? 'Rendering pausiert · keine laufende FPS-Messung' : measuredFps === null ? 'Bildrate wird gemessen …' : `${measuredFps} FPS gemessen · ${preferences.frameLimit ? `Limit ${preferences.frameLimit}` : 'Bildschirmfrequenz'}`;
+  $('fps-meter').textContent = suspended ? 'PAUSE · — FPS' : measuredFps === null ? '— FPS' : `${measuredFps} FPS`;
+}
+function applyGraphics() {
+  updateGraphicsUI(); if (!renderer || !sun) return;
+  const gl = renderer.getContext(), maxBuffer = gl.getParameter(gl.MAX_RENDERBUFFER_SIZE);
+  const ratio = Math.min(Math.min(devicePixelRatio || 1, 2) * preferences.resolutionScale, maxBuffer / Math.max(innerWidth, innerHeight));
+  renderer.setPixelRatio(ratio); renderer.setSize(innerWidth, innerHeight);
+  const enabled = preferences.shadowSize > 0, changed = renderer.shadowMap.enabled !== enabled;
+  const shadowSize = Math.min(preferences.shadowSize || 1024, renderer.capabilities.maxTextureSize);
+  renderer.shadowMap.enabled = enabled; sun.castShadow = enabled;
+  if (sun.shadow.mapSize.x !== shadowSize) { sun.shadow.map?.dispose(); sun.shadow.map = null; sun.shadow.mapPass?.dispose(); sun.shadow.mapPass = null; sun.shadow.mapSize.set(shadowSize, shadowSize); }
+  if (changed) scene.traverse(object => { for (const material of object.material ? (Array.isArray(object.material) ? object.material : [object.material]) : []) material.needsUpdate = true; });
+  renderer.shadowMap.needsUpdate = true; sun.shadow.needsUpdate = true; nextRenderAt = 0; measuredFps = null; fpsFrames = 0; fpsSince = 0; needsSingleFrame = true; updateGraphicsReadout();
+}
+function setupGraphicsControls() {
+  const commit = () => { applyGraphics(); savePreferences(); };
+  $('graphics-preset').onchange = () => { const preset = graphicsPresets[$('graphics-preset').value]; if (preset) { preferences = { ...preferences, ...preset }; commit(); } };
+  $('resolution-scale').oninput = () => { preferences.resolutionScale = Number($('resolution-scale').value) / 100; applyGraphics(); };
+  $('resolution-scale').onchange = savePreferences;
+  $('shadow-detail').onchange = () => { preferences.shadowSize = Number($('shadow-detail').value); commit(); };
+  $('frame-limit').onchange = () => { preferences.frameLimit = Number($('frame-limit').value); commit(); };
+  $('show-fps').onchange = () => { preferences.showFps = $('show-fps').checked; updateGraphicsUI(); savePreferences(); };
+  $('reset-graphics').onclick = () => { preferences = { ...displayDefaults }; commit(); };
+  $('entry-settings-button').onclick = () => showPanel('graphics');
+  $('graphics-continue').onclick = () => panel.close();
+  updateGraphicsUI();
+}
+function showPauseCard() { if (session && paused && !panel.open && !help.open && !pausePanel.open) pausePanel.showModal(); }
+function pauseWorld(reason = 'Deine Figur steht still und die 3D-Ansicht pausiert.') {
+  if (!session) return; paused = true; held.clear(); dragging = false; lastTouch = null; document.exitPointerLock?.(); if (!touchFlight) setFlight(false);
+  $('pause-reason').textContent = reason; $('npc-prompt').hidden = true; measuredFps = null; fpsFrames = 0; fpsSince = 0; showPauseCard(); updateGraphicsReadout();
+}
+function resumeWorld() { paused = false; pausePanel.close(); windowFocused = document.hasFocus(); lastFrame = 0; nextRenderAt = 0; fpsFrames = 0; fpsSince = 0; renderer?.domElement.focus(); updateGraphicsReadout(); }
+function resetFrameMeasurement() { lastFrame = 0; nextRenderAt = 0; measuredFps = null; fpsFrames = 0; fpsSince = 0; updateGraphicsReadout(); }
 async function api(path, body) {
   const headers = {}; if (session?.token) headers.Authorization = `Bearer ${session.token}`;
   if (body) headers['Content-Type'] = 'application/json';
@@ -60,7 +138,8 @@ function initRenderer() {
   sun = new THREE.DirectionalLight('#ffe3ac', 3.0); sun.position.set(-60, 110, 55); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -100, right: 100, top: 100, bottom: -100, near: 1, far: 300 }); sun.shadow.bias = -.0006; sun.shadow.normalBias = .08; scene.add(sun); scene.add(sun.target);
   const ambient = new THREE.AmbientLight('#beceff', .22); scene.add(ambient);
   renderer.domElement.addEventListener('webglcontextlost', e => { e.preventDefault(); toast('Die 3D-Verbindung wurde unterbrochen. Lade die Seite neu.', 20000); });
-  addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+  addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); applyGraphics(); });
+  applyGraphics();
   setupLook();
 }
 
@@ -201,15 +280,16 @@ function updateDynamicWorld() {
 function acceptWorld(next) { if (!next?.terrain) return; const changed = (next.worldId || String(next.terrain.seedInt)) !== worldSerial; if (!changed && next.revision < world.revision) return; world = next; if (changed) { player = { x: 0, z: 36 }; confirmedPlayer = { ...player }; yaw = 0; pitch = -.04; altitude = 0; flight = false; desiredFlight = false; touchFlight = false; clearTimeout(flightTimer); selectedNPC = null; npcMessages.clear(); buildWorld(); } else updateDynamicWorld(); }
 
 function updateUI() {
+  $('panel-pause-button').hidden = !session;
   $('realm-name').textContent = world.seed; $('epoch').textContent = `Epoche ${world.epoch}`; $('culture-count').textContent = `${world.cultures.length} Kulturen`; $('guest-count').textContent = `${world.players.length} / 10 Gäste`;
   $('stat-epoch').textContent = world.epoch; $('stat-residents').textContent = world.npcs.length; $('stat-cultures').textContent = world.cultures.length; $('slots-summary').textContent = `${world.players.length} / 10`;
   const guests = $('guest-list'); guests.replaceChildren(); for (let slot = 1; slot <= 10; slot++) { const p = world.players.find(p => p.slot === slot); guests.append(textNode('div', `${String(slot).padStart(2, '0')}  ${p ? p.name : 'Freier Platz'}`, p ? 'guest-slot occupied' : 'guest-slot')); }
   const events = $('world-events'); events.replaceChildren(); for (const e of world.recentEvents.slice(-4).reverse()) events.append(textNode('p', e.text, 'small'));
   if (!document.activeElement?.matches('#seed-input')) $('seed-input').placeholder = world.seed;
 }
-function isPaused() { return !session || panel.open || help.open || document.hidden; }
+function isPaused() { return !session || paused || !windowFocused || panel.open || help.open || document.hidden; }
 function showPanel(view = 'world') { document.exitPointerLock?.(); held.clear(); dragging = false; if (!touchFlight) setFlight(false); if (!panel.open) panel.showModal(); selectPanel(view); }
-function selectPanel(view) { for (const b of document.querySelectorAll('[data-panel]')) b.setAttribute('aria-selected', String(b.dataset.panel === view)); for (const s of document.querySelectorAll('[data-view]')) s.hidden = s.dataset.view !== view; if (view === 'knowledge') loadKnowledge(); if (view === 'board') loadBoard(); }
+function selectPanel(view) { for (const b of document.querySelectorAll('[data-panel]')) b.setAttribute('aria-selected', String(b.dataset.panel === view)); for (const s of document.querySelectorAll('[data-view]')) s.hidden = s.dataset.view !== view; if (view === 'knowledge') loadKnowledge(); if (view === 'board') loadBoard(); if (view === 'graphics') updateGraphicsUI(); }
 function findNearest() { let best = null, distance = Infinity; for (const npc of world.npcs) { const d = Math.hypot(player.x - npc.x, player.z - npc.z); if (d < distance) { best = npc; distance = d; } } return distance <= 30 ? { npc: best, distance } : null; }
 function talkNearby() { nearest = findNearest(); if (!nearest) { toast('Geh näher zu einem Bewohner, um ein Gespräch zu beginnen.'); return; } selectedNPC = nearest.npc.id; $('talk-name').textContent = nearest.npc.name; $('talk-description').textContent = `${nearest.npc.role} · ${nearest.npc.culture ? world.cultures.find(c => c.id === nearest.npc.culture)?.name || 'Gemeinschaft' : 'Ein eigener Weg'}`; renderConversation(); showPanel('talk'); $('talk-input').focus(); }
 function renderConversation() { $('conversation').replaceChildren(); for (const item of npcMessages.get(selectedNPC) || []) { const line = textNode('div', '', `chatline ${item.role}`); line.append(textNode('span', item.role === 'user' ? session.name : item.role === 'system' ? 'Weltverbindung' : world.npcs.find(n => n.id === selectedNPC)?.name || 'Bewohner', 'speaker'), textNode('p', item.text)); $('conversation').append(line); } $('conversation').scrollTop = $('conversation').scrollHeight; const source = [...(npcMessages.get(selectedNPC) || [])].reverse().find(item => item.source)?.source; $('talk-mode').textContent = source === 'ollama' ? 'Antwort vom verbundenen lokalen Sprachmodell · Ollama' : source === 'local-persona' ? 'Antwort aus der lokalen Figurenpersönlichkeit · ohne Sprachmodell' : 'Lokale Figurenpersönlichkeit · die Antwortquelle erscheint nach dem Gespräch.'; }
@@ -245,9 +325,15 @@ function setupLook() {
   $('look-button').addEventListener('click', async () => { try { await canvas.requestPointerLock(); } catch { toast('Zum Umsehen die freie Spielfläche ziehen.'); } });
 }
 function setupControls() {
-  addEventListener('keydown', e => { if (e.target.matches('input,textarea,select') || isPaused()) return; if (['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) e.preventDefault(); held.add(e.code); if (e.repeat) return; if (e.code === 'Space') setFlight(true); if (e.code === 'KeyE') talkNearby(); if (['Digit1','Digit2','Digit3','Digit4'].includes(e.code)) cast(['bloom','spark','ward','love'][Number(e.code.at(-1)) - 1]); if (e.code === 'KeyM') showPanel(); });
+  addEventListener('keydown', e => { if (e.target.matches?.('input,textarea,select')) return; if (session && !panel.open && !help.open && ['KeyP', 'Escape'].includes(e.code)) { e.preventDefault(); if (!e.repeat) paused ? resumeWorld() : pauseWorld(); return; } if (isPaused()) return; if (['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) e.preventDefault(); held.add(e.code); if (e.repeat) return; if (e.code === 'Space') setFlight(true); if (e.code === 'KeyE') talkNearby(); if (['Digit1','Digit2','Digit3','Digit4'].includes(e.code)) cast(['bloom','spark','ward','love'][Number(e.code.at(-1)) - 1]); if (e.code === 'KeyM') showPanel(); });
   addEventListener('keyup', e => { held.delete(e.code); if (e.code === 'Space' && !touchFlight) setFlight(false); });
-  addEventListener('blur', () => { held.clear(); dragging = false; if (!touchFlight) setFlight(false); });
+  addEventListener('blur', () => { windowFocused = false; held.clear(); dragging = false; resetFrameMeasurement(); pauseWorld('Das Spielfenster war im Hintergrund. Reise weiter, sobald du bereit bist.'); });
+  addEventListener('focus', () => { windowFocused = true; resetFrameMeasurement(); showPauseCard(); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) { windowFocused = false; pauseWorld('Die Spielansicht war ausgeblendet. Dein Weltstand bleibt erhalten.'); } else { windowFocused = document.hasFocus(); showPauseCard(); } resetFrameMeasurement(); });
+  $('pause-button').onclick = () => pauseWorld(); $('panel-pause-button').onclick = () => { panel.close(); pauseWorld(); }; $('continue-button').onclick = resumeWorld;
+  $('pause-settings-button').onclick = () => { pausePanel.close(); showPanel('graphics'); };
+  pausePanel.addEventListener('cancel', e => { e.preventDefault(); resumeWorld(); });
+  panel.addEventListener('close', showPauseCard); help.addEventListener('close', showPauseCard);
   for (const button of document.querySelectorAll('[data-move]')) { const code = ({ forward: 'KeyW', back: 'KeyS', left: 'KeyA', right: 'KeyD' })[button.dataset.move]; button.addEventListener('pointerdown', e => { e.preventDefault(); held.add(code); button.setPointerCapture(e.pointerId); }); for (const type of ['pointerup','pointercancel','lostpointercapture']) button.addEventListener(type, () => held.delete(code)); }
   $('levitate-button').onclick = () => { touchFlight = !desiredFlight; setFlight(touchFlight); }; for (const id of ['talk-button','nearby-talk-button']) $(id).onclick = talkNearby;
   for (const button of document.querySelectorAll('[data-spell]')) button.onclick = () => cast(button.dataset.spell);
@@ -258,7 +344,7 @@ function setupControls() {
   $('join-form').onsubmit = joinWorld; $('talk-form').onsubmit = sendTalk; $('world-form').onsubmit = changeWorld; $('export-button').onclick = exportWorld; $('leave-button').onclick = leaveWorld;
 }
 
-async function joinWorld(e) { e.preventDefault(); $('enter-button').disabled = true; $('join-status').textContent = 'Dein Platz in der Welt wird geöffnet …'; try { const name = $('guest-name').value.trim(); const r = await api('/api/join', { name }); session = { token: r.token, playerId: r.playerId, name, slot: r.slot }; sessionStorage.setItem(sessionKey, JSON.stringify(session)); acceptWorld(r.world); const own = r.world.players.find(p => p.id === session.playerId); if (own) { player = { x: own.x, z: own.z }; confirmedPlayer = { ...player }; } $('entry').hidden = true; $('game-ui').hidden = false; toast(`Willkommen, ${name}. Nara wartet am Weg zur Zitadelle.`, 6500); renderer.domElement.focus(); } catch (error) { $('join-status').textContent = error.message; } finally { $('enter-button').disabled = false; } }
+async function joinWorld(e) { e.preventDefault(); $('enter-button').disabled = true; $('join-status').textContent = 'Dein Platz in der Welt wird geöffnet …'; try { const name = $('guest-name').value.trim(); const r = await api('/api/join', { name }); session = { token: r.token, playerId: r.playerId, name, slot: r.slot }; paused = false; pausePanel.close(); windowFocused = document.hasFocus(); sessionStorage.setItem(sessionKey, JSON.stringify(session)); acceptWorld(r.world); const own = r.world.players.find(p => p.id === session.playerId); if (own) { player = { x: own.x, z: own.z }; confirmedPlayer = { ...player }; } $('entry').hidden = true; $('game-ui').hidden = false; toast(`Willkommen, ${name}. Nara wartet am Weg zur Zitadelle.`, 6500); renderer.domElement.focus(); } catch (error) { $('join-status').textContent = error.message; } finally { $('enter-button').disabled = false; } }
 async function sendTalk(e) {
   e.preventDefault(); if ($('talk-send').disabled || !session) return;
   if (!selectedNPC) { toast('Wähle eine Person in deiner Nähe.'); return; }
@@ -278,13 +364,16 @@ async function sendTalk(e) {
 }
 async function changeWorld(e) { e.preventDefault(); const button = e.submitter, seed = $('seed-input').value.trim(); if (!seed) return; button.disabled = true; try { const r = await api('/api/world', { token: session.token, seed }); acceptWorld(r.world); panel.close(); $('seed-input').value = ''; toast(`Du betrittst „${seed}“. Der frühere Weltstand ist gespeichert.`, 6000); } catch (error) { toast(error.message); } finally { button.disabled = false; } }
 async function exportWorld() { try { const data = await api('/api/export'); const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `HALVETH-Realms-Epoche-${world.epoch}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1500); toast('Weltstand als JSON exportiert.'); } catch (e) { toast(e.message); } }
-async function leaveWorld() { try { await api('/api/leave', { token: session.token }); } catch (e) { toast(e.message); return; } session = null; sessionStorage.removeItem(sessionKey); held.clear(); flight = false; desiredFlight = false; touchFlight = false; clearTimeout(flightTimer); panel.close(); $('game-ui').hidden = true; $('entry').hidden = false; $('join-status').textContent = 'Dein Gastplatz ist jetzt wieder frei.'; }
+async function leaveWorld() { try { await api('/api/leave', { token: session.token }); } catch (e) { toast(e.message); return; } session = null; paused = false; pausePanel.close(); sessionStorage.removeItem(sessionKey); held.clear(); flight = false; desiredFlight = false; touchFlight = false; clearTimeout(flightTimer); panel.close(); $('game-ui').hidden = true; $('entry').hidden = false; $('join-status').textContent = 'Dein Gastplatz ist jetzt wieder frei.'; }
 async function loadKnowledge() { if ($('knowledge-list').children.length) return; try { const data = await api('/api/knowledge'); const rows = Array.isArray(data) ? data : data.cards || data.sources || data.items || []; for (const card of rows) { const e = textNode('article', '', 'source-card'); e.append(textNode('span', card.topic || card.category || card.domain || 'QUELLE', 'eyebrow'), textNode('h4', card.title || card.name), textNode('p', card.summary || card.description || ''), textNode('p', card.designUse || card.application || '', 'small')); const url = card.url || card.sourceUrl; if (url && /^https?:\/\//.test(url)) { const a = textNode('a', card.publisher || 'Originalquelle ansehen ↗'); a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer'; e.append(a); } if (card.license) e.append(textNode('p', card.license, 'small muted')); $('knowledge-list').append(e); } } catch (e) { toast(e.message); } }
 async function loadBoard() { try { const data = await api('/api/board'); const rows = Array.isArray(data) ? data : data.tasks || data.items || []; $('board-list').replaceChildren(); for (const status of ['Neu','In Arbeit','Erledigt']) { const group = textNode('section', '', 'board-column'); const matching = rows.filter(t => t.status === status); group.append(textNode('h4', `${status} · ${matching.length}`)); for (const item of matching) { const card = textNode('article', '', 'board-card'); card.append(textNode('strong', item.title || item.name), textNode('p', item.description || item.detail || '', 'small')); group.append(card); } $('board-list').append(group); } } catch (e) { toast(e.message); } }
 
 function animate(now) {
-  requestAnimationFrame(animate); const dt = Math.min((now - (lastFrame || now)) / 1000, .05); lastFrame = now; elapsed += dt;
+  requestAnimationFrame(animate);
   if (!world) return;
+  if (document.hidden || !windowFocused || paused) { if (needsSingleFrame && !document.hidden && windowFocused && hasRenderedFrame) { renderer.render(scene, camera); needsSingleFrame = false; } lastFrame = 0; nextRenderAt = 0; fpsFrames = 0; fpsSince = 0; return; }
+  if (preferences.frameLimit) { if (now < nextRenderAt - .75) return; const interval = 1000 / preferences.frameLimit; nextRenderAt = nextRenderAt && now - nextRenderAt < interval ? nextRenderAt + interval : now + interval; }
+  const dt = Math.min((now - (lastFrame || now)) / 1000, .05); lastFrame = now; elapsed += dt;
   if (!isPaused()) {
     const forward = Number(held.has('KeyW') || held.has('ArrowUp')) - Number(held.has('KeyS') || held.has('ArrowDown'));
     const side = Number(held.has('KeyD') || held.has('ArrowRight')) - Number(held.has('KeyA') || held.has('ArrowLeft'));
@@ -314,14 +403,24 @@ function animate(now) {
   }
   if (now - lastMapUI > 250 && session) { lastMapUI = now; nearest = findNearest(); $('npc-prompt').hidden = !nearest || isPaused(); if (nearest) $('npc-prompt-name').textContent = `${nearest.npc.name} · ${nearest.npc.role}`; const nearLand = [...world.landmarks].sort((a,b) => Math.hypot(a.x-player.x,a.z-player.z)-Math.hypot(b.x-player.x,b.z-player.z))[0]; $('location-name').textContent = nearLand && Math.hypot(nearLand.x-player.x,nearLand.z-player.z)<45 ? nearLand.name : height(player.x, player.z)<1 ? 'Die türkisfarbene Küste' : 'Die weiten Lichtungen'; const angle = ((-yaw * 180 / Math.PI) % 360 + 360) % 360; $('compass-label').textContent = `${['N','NO','O','SO','S','SW','W','NW'][Math.round(angle / 45) % 8]}  ·  ${Math.round(angle)}°`; }
   renderer.render(scene, camera);
+  hasRenderedFrame = true; needsSingleFrame = false;
+  if (!fpsSince) { fpsSince = now; fpsFrames = 0; } else fpsFrames++;
+  if (now - fpsSince >= 1000) { measuredFps = Math.round(fpsFrames * 1000 / (now - fpsSince)); fpsSince = now; fpsFrames = 0; updateGraphicsReadout(); }
 }
 
 async function start() {
   setupControls();
-  try { initRenderer(); world = await api('/api/state'); buildWorld();
+  try { await loadPreferences(); setupGraphicsControls(); initRenderer(); world = await api('/api/state'); buildWorld();
     try { const saved = JSON.parse(sessionStorage.getItem(sessionKey)); if (saved?.token && saved?.playerId) { session = saved; const current = await api('/api/state'); const own = current.players.find(p => p.id === saved.playerId); if (own) { acceptWorld(current); player = { x: own.x, z: own.z }; confirmedPlayer = { ...player }; yaw = own.yaw || 0; flight = Boolean(own.levitating); desiredFlight = flight; touchFlight = flight; $('entry').hidden = true; $('game-ui').hidden = false; } else { session = null; sessionStorage.removeItem(sessionKey); } } } catch { session = null; sessionStorage.removeItem(sessionKey); }
     $('loading').hidden = true; requestAnimationFrame(animate);
-    setInterval(async () => { if (document.hidden) return; try { const next = await api('/api/state'); acceptWorld(next); } catch { if (session) toast('Die lokale Verbindung ist unterbrochen. Deine letzte Welt bleibt sichtbar.'); } }, 2200);
+    let lastPoll = 0, pollBusy = false;
+    setInterval(async () => {
+      const period = document.hidden || paused || !windowFocused ? 10000 : 2200;
+      if (pollBusy || Date.now() - lastPoll < period) return; pollBusy = true; lastPoll = Date.now();
+      try { const next = await api('/api/state'); acceptWorld(next); }
+      catch (error) { if (session && error.status === 401) { session = null; sessionStorage.removeItem(sessionKey); paused = false; held.clear(); flight = desiredFlight = touchFlight = false; clearTimeout(flightTimer); pausePanel.close(); panel.close(); help.close(); $('game-ui').hidden = true; $('entry').hidden = false; $('join-status').textContent = 'Dein Gastplatz ist abgelaufen. Der Weltstand bleibt erhalten; du kannst wieder beitreten.'; } else if (session && !document.hidden) toast('Die lokale Verbindung ist unterbrochen. Deine letzte Welt bleibt sichtbar.'); }
+      finally { pollBusy = false; }
+    }, 1100);
   } catch (e) { $('loading').hidden = true; $('join-status').textContent = `Die 3D-Welt konnte nicht starten: ${e.message}. Prüfe den lokalen Server und WebGL im Browser.`; $('enter-button').disabled = true; console.error('HALVETH Realms start:', e); }
 }
 start();

@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { createWorld, evolveWorld, seedIntFromString, WORLD_LIMIT } from './shared/world.mjs';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
-const VERSION = '0.1.0';
+const VERSION = JSON.parse(await readFile(resolve(ROOT, 'package.json'), 'utf8')).version;
 const MAX_GUESTS = 10;
 const ZERO_HASH = '0'.repeat(64);
 const MAX_LEDGER = 1024;
@@ -82,7 +82,7 @@ export async function createGameServer(options = {}) {
   const host = options.host || process.env.REALMS_HOST || '127.0.0.1';
   const port = options.port ?? Number(process.env.REALMS_PORT || 18770);
   let world, ledger = [], ledgerHead = ZERO_HASH, dirty = false, closed = false;
-  let flushTail = Promise.resolve();
+  let flushTail = Promise.resolve(), closePromise = null;
   const realmsDir = resolve(dataDir, 'realms');
   await mkdir(realmsDir, { recursive: true });
 
@@ -376,10 +376,10 @@ export async function createGameServer(options = {}) {
   });
   server.requestTimeout = 15_000;
   server.headersTimeout = 10_000;
-  const saveTimer = setInterval(() => { if (!transitioning) flush().catch(error => console.error('[checkpoint]', error.message)); }, 500);
+  const saveTimer = setInterval(() => { if (!closed && !transitioning) flush().catch(error => console.error('[checkpoint]', error.message)); }, 500);
   saveTimer.unref();
   const tickTimer = autoTickMs > 0 ? setInterval(() => {
-    if (transitioning) return;
+    if (closed || transitioning) return;
     prune(); evolution(1);
   }, autoTickMs) : null;
   tickTimer?.unref();
@@ -391,11 +391,16 @@ export async function createGameServer(options = {}) {
       const address = server.address();
       return { host, port: address.port, url: `http://${host.includes(':') ? `[${host}]` : host}:${address.port}` };
     },
-    async close() {
-      if (closed) return;
-      closed = true; clearInterval(saveTimer); if (tickTimer) clearInterval(tickTimer);
-      if (server.listening) await new Promise(resolveClose => server.close(resolveClose));
-      await flush(true);
+    close() {
+      if (!closePromise) {
+        closed = true; clearInterval(saveTimer); if (tickTimer) clearInterval(tickTimer);
+        // Every caller shares the complete socket-close and final-write barrier.
+        closePromise = (async () => {
+          if (server.listening) await new Promise(resolveClose => server.close(resolveClose));
+          await flush(true);
+        })().catch(error => { closePromise = null; throw error; });
+      }
+      return closePromise;
     },
   };
 }

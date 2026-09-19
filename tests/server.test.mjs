@@ -14,7 +14,7 @@ async function fixture(t, overrides = {}) {
   let now = 1_000_000;
   const game = await createGameServer({ dataDir, port: 0, seed: 'Gemeinsame Sterne', autoTickMs: 0, clock: () => now, ...overrides });
   const address = await game.start();
-  t.after(async () => { await game.close(); await rm(dataDir, { recursive: true, force: true }); });
+  t.after(async () => { await game.close(); await rm(dataDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 }); });
   const request = async (path, body, headers = {}) => {
     const response = await fetch(address.url + path, body === undefined ? { headers } : { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body) });
     return { status: response.status, data: await response.json() };
@@ -211,6 +211,21 @@ test('idle expiration frees slots; authenticated state requests renew only their
   assert.equal((await request('/api/join', { name: 'C', slot: b.slot })).status, 200);
 });
 
+test('every concurrent close caller waits for the final checkpoint to finish', async t => {
+  const { game, dataDir, request } = await fixture(t);
+  const guest = (await request('/api/join', { name: 'Shutdown-Gast' })).data;
+  await request('/api/action', { token: guest.token, kind: 'cast', spell: 'bloom', x: 0, z: 40 });
+  let firstFinished = false;
+  const firstClose = game.close().then(() => { firstFinished = true; });
+  try {
+    await game.close();
+    assert.equal(firstFinished, true, 'Ein zweiter close-Aufruf darf den noch laufenden Speichervorgang nicht überspringen.');
+    const saved = JSON.parse(await readFile(join(dataDir, 'realms', `${guest.world.seedHash}.json`), 'utf8'));
+    assert.equal(saved.world.landmarks.filter(landmark => landmark.id.startsWith('grown-')).length, 1);
+    assert.equal((await readdir(dataDir)).some(name => name.endsWith('.tmp')), false);
+  } finally { await firstClose; }
+});
+
 test('JSON protocol errors, huge bodies and unrelated origins get useful errors', async t => {
   const { request, address } = await fixture(t);
   let response = await fetch(address.url + '/api/join', { method: 'POST', body: '{}' });
@@ -230,6 +245,7 @@ test('JSON protocol errors, huge bodies and unrelated origins get useful errors'
 test('CLI server stops gracefully and a new process restores Bloom, NPC memory and separate realms', async t => {
   const dataDir = await mkdtemp(join(tmpdir(), 'halveth-realms-cli-'));
   const root = fileURLToPath(new URL('..', import.meta.url));
+  const appVersion = JSON.parse(await readFile(join(root, 'package.json'), 'utf8')).version;
   const children = new Set();
   const environment = { ...process.env, REALMS_DATA_DIR: dataDir, REALMS_PORT: '0', REALMS_OLLAMA: '0' };
   async function start() {
@@ -238,7 +254,7 @@ test('CLI server stops gracefully and a new process restores Bloom, NPC memory a
     let output = '', error = '';
     child.stdout.on('data', chunk => { output += chunk; }); child.stderr.on('data', chunk => { error += chunk; });
     const deadline = Date.now() + 5000;
-    while (!/HALVETH Realms 0.1.0: http:/.test(output)) {
+    while (!output.includes(`HALVETH Realms ${appVersion}: http:`)) {
       if (child.exitCode !== null || Date.now() > deadline) throw new Error(`CLI start failed: ${output} ${error}`);
       await new Promise(wait => setTimeout(wait, 25));
     }
@@ -262,7 +278,7 @@ test('CLI server stops gracefully and a new process restores Bloom, NPC memory a
   t.after(async () => {
     // The normal path uses the actual graceful helper. Cleanup is isolated to test children.
     for (const child of children) { child.kill(); if (child.exitCode === null) await once(child, 'exit'); }
-    await rm(dataDir, { recursive: true, force: true });
+    await rm(dataDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
   });
   let running = await start();
   let guest = await running.request('/api/join', { name: 'Neustartgast' });

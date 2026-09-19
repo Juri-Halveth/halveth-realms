@@ -12,7 +12,7 @@
   <div class="world-vignette" aria-hidden="true"></div>
   <div id="loading" class="loading" role="status"><span class="loading-mark">✦</span><span>Eine Welt nimmt Gestalt an …</span></div>
   <section id="entry" class="entry-panel" aria-labelledby="entry-title">
-    <div class="eyebrow">HALVETH REALMS <span>·</span> LOCAL EDITION 01</div>
+    <div class="eyebrow">HALVETH REALMS <span>·</span> <span data-platform-badge>LOCAL EDITION</span></div>
     <div class="entry-sigil" aria-hidden="true">✦</div>
     <h1 id="entry-title">Eine Welt.<br><em>Deine Geschichte.</em></h1>
     <p class="entry-description">Hinter der scharlachroten Zitadelle wachsen neue Geschichten. Geh auf Entdeckung, sprich mit ihren Bewohnern und hinterlasse ein wenig Magie.</p>
@@ -21,6 +21,7 @@
       <button class="primary" id="enter-button" type="submit">Welt betreten <span aria-hidden="true">↗</span></button>
     </form>
     <p id="join-status" role="status" class="small">Eine originale, lokal erzeugte Welt. Zehn gemeinsame Gastplätze.</p>
+    <button id="entry-settings-button" class="quiet-button entry-settings" type="button">Grafik & Anzeige</button>
     <div class="entry-footnote">WASD bewegen <span>·</span> Ziehen zum Umsehen <span>·</span> E Gespräch</div>
   </section>
   <div id="game-ui" hidden>
@@ -40,17 +41,18 @@
         <button data-spell="ward" aria-label="Schutz wirken, Taste 3"><span class="spell-number">3</span><span class="spell-icon">◇</span><span class="spell-title">Schutz</span><span class="spell-hint">Nähe bewahren</span></button>
         <button data-spell="love" aria-label="Love wirken, Taste 4"><span class="spell-number">4</span><span class="spell-icon">♥</span><span class="spell-title">LOVE</span><span class="spell-hint">Wärme schenken</span></button>
       </div>
-      <div class="hintline"><span>WASD <small>bewegen</small></span><span>LEER <small>schweben</small></span><span>E <small>sprechen</small></span><button id="look-button">Mausblick</button></div>
+      <div class="hintline"><span>WASD <small>bewegen</small></span><span>LEER <small>schweben</small></span><span>E <small>sprechen</small></span><div class="hud-button-row"><button id="pause-button">Pause · P</button><button id="look-button">Mausblick</button></div></div>
     </aside>
     <div id="mobile-controls" class="mobile-controls" aria-label="Bewegungssteuerung">
       <div class="movement"><button data-move="forward" aria-label="Vorwärts">↑</button><button data-move="left" aria-label="Links">←</button><button data-move="back" aria-label="Rückwärts">↓</button><button data-move="right" aria-label="Rechts">→</button></div>
       <div class="mobile-actions"><button id="levitate-button" aria-pressed="false">↑ Schweben</button><button id="talk-button">Gespräch</button></div>
     </div>
   </div>
+  <output id="fps-meter" class="fps-meter" hidden aria-live="off" aria-label="Gemessene Bildrate">— FPS</output>
   <div id="toast" class="toast" role="status" hidden></div>
   <dialog id="side-panel" class="panel" aria-labelledby="panel-title">
-    <header class="panel-header"><div><span class="eyebrow">DEIN LOKALES UNIVERSUM</span><h2 id="panel-title">Die Welt gestalten.</h2></div><button class="icon-button" id="close-panel" aria-label="Zurück zur Welt">×</button></header>
-    <nav class="panel-tabs" aria-label="Weltmenü"><button data-panel="world" aria-selected="true">Welt</button><button data-panel="talk" aria-selected="false">Gespräch</button><button data-panel="knowledge" aria-selected="false">Quellen</button><button data-panel="board" aria-selected="false">Rachel</button></nav>
+    <header class="panel-header"><div><span class="eyebrow">DEIN LOKALES UNIVERSUM</span><h2 id="panel-title">Die Welt gestalten.</h2></div><div class="panel-actions"><button class="icon-button" id="panel-pause-button" aria-label="Spiel pausieren" title="Pause" hidden>Ⅱ</button><button class="icon-button" id="close-panel" aria-label="Zurück zur Welt">×</button></div></header>
+    <nav class="panel-tabs" aria-label="Weltmenü"><button data-panel="world" aria-selected="true">Welt</button><button data-panel="talk" aria-selected="false">Gespräch</button><button data-panel="knowledge" aria-selected="false">Quellen</button><button data-panel="board" aria-selected="false">Rachel</button><button data-panel="graphics" aria-selected="false">Grafik</button></nav>
     <section class="panel-view" data-view="world">
       <p class="eyebrow">ZEIT HINTERLÄSST SPUREN</p><h3>Was wächst als Nächstes?</h3><p>Mit jeder simulierten Epoche bewegen sich Bewohner, sammeln Erinnerungen und können neue Gemeinschaften bilden.</p>
       <div class="stat-grid"><div><strong id="stat-epoch">0</strong><span>Epoche</span></div><div><strong id="stat-residents">0</strong><span>Bewohner</span></div><div><strong id="stat-cultures">0</strong><span>Kulturen</span></div></div>
@@ -64,7 +66,23 @@
     <section class="panel-view" data-view="talk" hidden><span class="eyebrow">EINE BEGEGNUNG</span><h3 id="talk-name">Jemanden kennenlernen</h3><p id="talk-description">Geh zu einer Person in der Welt. Mit E oder „Gespräch“ beginnst du eine Unterhaltung in ihrer Nähe.</p><div id="conversation" class="conversation" aria-live="polite"></div><form id="talk-form"><label class="field" for="talk-input"><span>Deine Worte</span><textarea id="talk-input" rows="3" maxlength="600" placeholder="Was beschäftigt dich an diesem Ort?" required></textarea></label><button class="primary" id="talk-send" type="submit">Sprechen ↗</button></form><p id="talk-mode" class="small muted">Lokale Figurenpersönlichkeiten. Ein lokales Sprachmodell wird nur angezeigt, wenn es tatsächlich antwortet.</p></section>
     <section class="panel-view" data-view="knowledge" hidden><span class="eyebrow">WISSEN HAT EINE HERKUNFT</span><h3>Ideen für diese Welt.</h3><p>Diese kuratierte Auswahl verbindet Gestaltung, Natur und offene Technik. Reale Quellen und die Erzählung der Spielwelt bleiben erkennbar.</p><div id="knowledge-list"></div></section>
     <section class="panel-view" data-view="board" hidden><span class="eyebrow">RACHEL · BAUWERKSTATT</span><h3>Eine Welt wird gebaut.</h3><div id="board-list"></div></section>
+    <section class="panel-view" data-view="graphics" hidden>
+      <span class="eyebrow"><span data-platform-badge>LOCAL EDITION</span> · DEINE ANZEIGE</span><h3>Schön, auf deine Art.</h3>
+      <p>Die Einstellungen wirken sofort auf die 3D-Ansicht. Deine Welt und ihre Bewohner bleiben erhalten.</p>
+      <label class="field" for="graphics-preset"><span>Grafikprofil</span><select id="graphics-preset"><option value="light">Leicht · weniger GPU-Leistung</option><option value="balanced">Ausgewogen</option><option value="detailed">Detailreich</option><option value="custom" disabled>Individuell</option></select></label>
+      <p id="preset-description" class="small muted">100 % Auflösung, 2048er Schatten, Ziel 60 FPS.</p>
+      <label class="field range-field" for="resolution-scale"><span>Auflösungsskala <output id="resolution-value" for="resolution-scale">100 %</output></span><input id="resolution-scale" type="range" min="50" max="125" step="5" value="100" aria-describedby="resolution-hint"></label>
+      <p id="resolution-hint" class="small muted">Die Oberfläche bleibt scharf. Eine kleinere Skala rendert die Spielwelt mit weniger Pixeln; 100 % nutzt die Geräteauflösung bis Faktor 2.</p>
+      <label class="field" for="shadow-detail"><span>Schattendetails</span><select id="shadow-detail"><option value="0">Aus</option><option value="1024">Kompakt · 1024 × 1024</option><option value="2048">Fein · 2048 × 2048</option><option value="4096">Sehr fein · 4096 × 4096</option></select></label>
+      <label class="field" for="frame-limit"><span>Bildratenlimit</span><select id="frame-limit"><option value="30">30 FPS</option><option value="60">60 FPS</option><option value="120">120 FPS</option><option value="0">Bildschirmfrequenz</option></select></label>
+      <p class="small muted">Ein Zielmaximum, keine zugesicherte Bildrate. Im Hintergrund und bei Pause ruht das Rendering.</p>
+      <label class="check-field" for="show-fps"><input id="show-fps" type="checkbox"><span>Gemessene FPS in der Spielansicht zeigen</span></label>
+      <div class="graphics-readout"><span class="eyebrow">AKTUELLE ANZEIGE</span><strong id="render-resolution">Wird vorbereitet …</strong><span id="render-performance">Messung nach dem ersten Bild</span></div>
+      <p id="preferences-status" class="small muted" role="status">Anzeigeeinstellungen werden getrennt vom Weltstand gespeichert.</p>
+      <div class="control-row"><button id="reset-graphics" class="secondary" type="button">Standard wiederherstellen</button><button id="graphics-continue" class="quiet-button" type="button">Zurück</button></div>
+    </section>
   </dialog>
-  <dialog id="help-panel" class="help-panel" aria-labelledby="help-title"><button id="close-help" class="icon-button" aria-label="Steuerung schließen">×</button><span class="eyebrow">DEIN ERSTER SCHRITT</span><h2 id="help-title">Folge deiner Neugier.</h2><div class="control-grid"><kbd>W A S D / ↑ ↓ ← →</kbd><span>Gehen und entdecken</span><kbd>Ziehen / Mausblick</kbd><span>In der Welt umsehen</span><kbd>Shift</kbd><span>Schneller reisen</span><kbd>Leertaste</kbd><span>Schweben, solange du hältst</span><kbd>E</kbd><span>Mit einer nahen Person sprechen</span><kbd>1 · 2 · 3 · 4</kbd><span>Blüte, Funken, Schutz und LOVE wirken</span><kbd>Esc</kbd><span>Maus freigeben / Menü schließen</span></div><p>Auf Touchgeräten: links unten bewegen, freie Spielfläche zum Umsehen ziehen. Die Zauber und Gespräche haben eigene Knöpfe.</p><button id="resume-button" class="primary">Zurück in die Welt ↗</button></dialog>
+  <dialog id="pause-panel" class="pause-panel" aria-labelledby="pause-title"><span class="pause-sigil" aria-hidden="true">✦</span><span class="eyebrow">EIN AUGENBLICK FÜR DICH</span><h2 id="pause-title">Die Reise wartet.</h2><p id="pause-reason">Deine Figur steht still und die 3D-Ansicht pausiert.</p><p class="small muted">Dein Weltstand bleibt erhalten. Andere Gäste können währenddessen weiterreisen.</p><button id="continue-button" class="primary" type="button">Weiterreisen ↗</button><button id="pause-settings-button" class="quiet-button" type="button">Grafik & Anzeige</button><span class="pause-keyhint">P oder Esc · weiterreisen</span></dialog>
+  <dialog id="help-panel" class="help-panel" aria-labelledby="help-title"><button id="close-help" class="icon-button" aria-label="Steuerung schließen">×</button><span class="eyebrow">DEIN ERSTER SCHRITT</span><h2 id="help-title">Folge deiner Neugier.</h2><div class="control-grid"><kbd>W A S D / ↑ ↓ ← →</kbd><span>Gehen und entdecken</span><kbd>Ziehen / Mausblick</kbd><span>In der Welt umsehen</span><kbd>Shift</kbd><span>Schneller reisen</span><kbd>Leertaste</kbd><span>Schweben, solange du hältst</span><kbd>E</kbd><span>Mit einer nahen Person sprechen</span><kbd>1 · 2 · 3 · 4</kbd><span>Blüte, Funken, Schutz und LOVE wirken</span><kbd>P / Esc</kbd><span>Pause / weiterreisen · Esc schließt Menüs</span></div><p>Auf Touchgeräten: links unten bewegen, freie Spielfläche zum Umsehen ziehen. Die Zauber und Gespräche haben eigene Knöpfe.</p><button id="resume-button" class="primary">Zurück in die Welt ↗</button></dialog>
   <script type="module" src="/game.mjs"></script>
 </body></html>
