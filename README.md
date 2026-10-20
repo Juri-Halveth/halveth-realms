@@ -2,15 +2,11 @@
 [Original / Deutsch](README.md) · [English](README.en.md) · [Русский](README.ru.md)
 <!-- /HUB_LANGUAGES_V1 -->
 
-# HALVETH Realms · Scarlet Garden
+# Scarlet Garden – prozedurale Fantasywelten erkunden
 
-<!-- HALVETH_WORK_CERTIFICATES_V1_1 -->
-## Juri Janovski / Juri Halveth – Privates HALVETH-Werkzertifikat
+Ein eigenständiger Fantasy-Sandbox-Prototyp mit prozeduralen Welten. Der Quellcode und die Startanleitung zeigen den jeweiligen Spiel- und Distributionsstand.
 
-[Privates HALVETH-Werkzertifikat: Dokumentierter Spielprototyp und Desktop-Distributionsstand – Scarlet Garden / Realms](https://juri-halveth.github.io/werkzertifikate/#werk-halveth-realms).
-
-HALVETH VERACHEL STUDIOS · Quellstand, dokumentierte Ergebnisse und SHA-256-Belege stehen im Werkzertifikat. Private, mit Codex erstellte Werkdokumentation; keine ISTQB- oder sonstige Personenzertifizierung.
-<!-- /HALVETH_WORK_CERTIFICATES_V1_1 -->
+[**Projekt öffnen →**](https://github.com/Juri-Halveth/halveth-realms#readme) · [Arbeitsproben](https://juri-halveth.github.io/koennen/) · [Portfolio](https://juri-halveth.github.io/)
 
 
 An original procedural fantasy sandbox: a scarlet observatory, luminous groves, settlements and cosmic ruins. Explore, levitate, grow a grove, meet the inhabitants and watch new communities form. The first playable edition is a small stylized world, built as a foundation for a larger independent game.

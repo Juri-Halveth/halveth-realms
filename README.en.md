@@ -1,6 +1,6 @@
 [Original / Deutsch](README.md) · [English](README.en.md) · [Русский](README.ru.md)
 
-# HALVETH Realms · Scarlet Garden
+# Scarlet Garden – explore procedural fantasy worlds
 
 **Concise project guide · EN / RU**
 
