@@ -33,12 +33,19 @@ function assertLocalRequestAuthority(request, configuredHost) {
   // page. Bind both to this listener so a rebinding hostname cannot become a
   // local game origin. Explicitly configured hostnames remain an operator choice.
   const rawHost = request.headers.host;
-  expect(typeof rawHost === 'string' && /^(?:\[[0-9a-fA-F:]+\]|[a-zA-Z0-9.-]+)(?::[0-9]{1,5})?$/.test(rawHost), 403, 'Unbekannte lokale Spieladresse.');
+  expect(typeof rawHost === 'string' && /^(?:\[[0-9a-fA-F:.]+\]|[a-zA-Z0-9.-]+)(?::[0-9]{1,5})?$/.test(rawHost), 403, 'Unbekannte lokale Spieladresse.');
   let authority;
   try { authority = new URL(`http://${rawHost}`); } catch { throw new ApiError(403, 'Unbekannte lokale Spieladresse.'); }
   const localAddress = request.socket.localAddress?.replace(/^::ffff:/, '');
   const isLoopback = value => ['127.0.0.1', '::1', '[::1]', 'localhost'].includes(value);
-  const allowedHosts = new Set([configuredHost.toLowerCase(), localAddress?.toLowerCase()]);
+  const canonicalHostname = value => {
+    if (!value) return null;
+    const literal = value.includes(':') && !value.startsWith('[') ? `[${value}]` : value;
+    try { return new URL(`http://${literal}`).hostname; } catch { return null; }
+  };
+  // Use the same URL hostname representation on both sides (including IPv6
+  // brackets and compressed IPv4-mapped forms) before comparing authority.
+  const allowedHosts = new Set([configuredHost, localAddress].map(canonicalHostname).filter(Boolean));
   if (isLoopback(localAddress)) for (const alias of ['127.0.0.1', '[::1]', 'localhost']) allowedHosts.add(alias);
   expect(allowedHosts.has(authority.hostname) && Number(authority.port || 80) === request.socket.localPort, 403, 'Bitte die lokale Spieladresse aus dem Startfenster verwenden.');
   expect(request.headers['sec-fetch-site'] !== 'cross-site', 403, 'Die Spieladresse muss direkt geöffnet werden.');

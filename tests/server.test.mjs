@@ -51,6 +51,14 @@ test('local request authority is bound to the listener before state reads or gue
   assert.equal(after.revision, before.revision + 1);
 });
 
+test('an explicitly configured IPv4-mapped IPv6 listener accepts its own canonical URL', async t => {
+  const { address, request } = await fixture(t, { host: '::ffff:127.0.0.1' });
+  const ownOrigin = new URL(address.url).origin;
+  assert.equal((await request('/api/health', undefined, { Origin: ownOrigin })).status, 200);
+  const foreign = `http://rebound.example.invalid:${address.port}`;
+  assert.equal((await localRequest(address.url + '/api/export', { headers: { Host: new URL(foreign).host, Origin: foreign } })).status, 403);
+});
+
 test('ten real guest sessions own distinct slots and only their joining client receives its token', async t => {
   const { request } = await fixture(t);
   const guests = [];
