@@ -27,6 +27,25 @@ function textField(value, label, max) {
   return value.trim();
 }
 function coordinate(n) { return typeof n === 'number' && Number.isFinite(n) && Math.abs(n) <= WORLD_LIMIT; }
+
+function assertLocalRequestAuthority(request, configuredHost) {
+  // An Origin/Host equality check alone trusts two values controlled by a remote
+  // page. Bind both to this listener so a rebinding hostname cannot become a
+  // local game origin. Explicitly configured hostnames remain an operator choice.
+  const rawHost = request.headers.host;
+  expect(typeof rawHost === 'string' && /^(?:\[[0-9a-fA-F:]+\]|[a-zA-Z0-9.-]+)(?::[0-9]{1,5})?$/.test(rawHost), 403, 'Unbekannte lokale Spieladresse.');
+  let authority;
+  try { authority = new URL(`http://${rawHost}`); } catch { throw new ApiError(403, 'Unbekannte lokale Spieladresse.'); }
+  const localAddress = request.socket.localAddress?.replace(/^::ffff:/, '');
+  const isLoopback = value => ['127.0.0.1', '::1', '[::1]', 'localhost'].includes(value);
+  const allowedHosts = new Set([configuredHost.toLowerCase(), localAddress?.toLowerCase()]);
+  if (isLoopback(localAddress)) for (const alias of ['127.0.0.1', '[::1]', 'localhost']) allowedHosts.add(alias);
+  expect(allowedHosts.has(authority.hostname) && Number(authority.port || 80) === request.socket.localPort, 403, 'Bitte die lokale Spieladresse aus dem Startfenster verwenden.');
+  expect(request.headers['sec-fetch-site'] !== 'cross-site', 403, 'Die Spieladresse muss direkt geöffnet werden.');
+  if (request.headers.origin) {
+    expect(request.headers.origin === authority.origin, 403, 'Bitte das Spiel über dieselbe lokale Adresse verwenden.');
+  }
+}
 export function selectKnowledgeCards(cards, message, npc) {
   if (!Array.isArray(cards)) return [];
   const words = text => new Set((text.toLocaleLowerCase('de').match(/[\p{L}]{4,}/gu) || []).map(word => word.slice(0, 6)));
@@ -216,15 +235,10 @@ export async function createGameServer(options = {}) {
       response.end(JSON.stringify(payload));
     };
     try {
+      assertLocalRequestAuthority(request, host);
       prune();
       const url = new URL(request.url, 'http://localhost');
       const path = url.pathname;
-      const origin = request.headers.origin;
-      if (origin) {
-        let sameOrigin = false;
-        try { sameOrigin = new URL(origin).host === request.headers.host; } catch { /* invalid Origin */ }
-        expect(sameOrigin, 403, 'Bitte das Spiel über dieselbe lokale Adresse verwenden.');
-      }
       if (path.startsWith('/api/')) {
         expect(!transitioning, 503, 'Weltwechsel wird gerade gespeichert. Bitte kurz warten.');
         if (request.method === 'GET') {

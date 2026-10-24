@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
+import { request as httpRequest } from 'node:http';
 import { fileURLToPath } from 'node:url';
 import { createGameServer, canonical } from '../server.mjs';
 
@@ -22,6 +23,33 @@ async function fixture(t, overrides = {}) {
   return { game, request, address, dataDir, advance: ms => { now += ms; } };
 }
 const hash = x => createHash('sha256').update(canonical(x)).digest('hex');
+
+function localRequest(url, { method = 'GET', headers = {}, body } = {}) {
+  return new Promise((accept, reject) => {
+    const request = httpRequest(url, { method, headers }, response => {
+      let text = '';
+      response.setEncoding('utf8'); response.on('data', chunk => { text += chunk; });
+      response.on('end', () => accept({ status: response.statusCode, data: JSON.parse(text) }));
+    });
+    request.on('error', reject); request.end(body);
+  });
+}
+
+test('local request authority is bound to the listener before state reads or guest creation', async t => {
+  const { address, request } = await fixture(t);
+  const port = new URL(address.url).port;
+  const foreignHost = `rebound.example.invalid:${port}`;
+  const before = (await request('/api/state')).data;
+  assert.equal((await localRequest(address.url + '/api/export', { headers: { Host: foreignHost, Origin: `http://${foreignHost}` } })).status, 403);
+  assert.equal((await localRequest(address.url + '/api/join', { method: 'POST', headers: { Host: foreignHost, Origin: `http://${foreignHost}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Foreign page' }) })).status, 403);
+  assert.equal((await request('/api/state', undefined, { Origin: address.url.replace('http:', 'https:') })).status, 403);
+  assert.equal((await request('/api/state', undefined, { 'Sec-Fetch-Site': 'cross-site' })).status, 403);
+  assert.equal((await localRequest(address.url + '/api/health', { headers: { Host: `localhost:${port}`, Origin: `http://localhost:${port}` } })).status, 200);
+  assert.equal((await request('/api/join', { name: 'Local guest' }, { Origin: address.url })).status, 200);
+  const after = (await request('/api/state')).data;
+  assert.equal(after.players.length, 1);
+  assert.equal(after.revision, before.revision + 1);
+});
 
 test('ten real guest sessions own distinct slots and only their joining client receives its token', async t => {
   const { request } = await fixture(t);
