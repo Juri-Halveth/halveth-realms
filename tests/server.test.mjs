@@ -24,6 +24,17 @@ async function fixture(t, overrides = {}) {
 }
 const hash = x => createHash('sha256').update(canonical(x)).digest('hex');
 
+test('historical sources that became private are not advertised as public links', async t => {
+  const { request } = await fixture(t);
+  const response = await request('/api/knowledge');
+  assert.equal(response.status, 200);
+  assert.equal(response.data.length, 13);
+  const privateCards = response.data.filter(card => card.currentAccess === 'PRIVATE_AT_2026-10-28');
+  assert.equal(privateCards.length, 5);
+  assert.ok(privateCards.every(card => card.url === null && card.historicalUrl.includes('/open-research-branches/blob/')));
+  assert.ok(response.data.filter(card => !card.currentAccess).every(card => /^https:\/\//.test(card.url)));
+});
+
 test('explicit invalid saved-realm limits are rejected before startup', async t => {
   const dataDir = await mkdtemp(join(tmpdir(), 'halveth-realms-limit-'));
   t.after(() => rm(dataDir, { recursive: true, force: true }));
