@@ -2,7 +2,9 @@
 
 Stand des Quellenabrufs: 19. September 2026, 01:33 Uhr Europe/Berlin (18. September 2026, 23:33 UTC).
 
-`data/knowledge.json` enthält **13 kurze Datenkarten: neun öffentliche HALVETH-/LUCINET-/Lernstudio-Quellen und vier technische Primärquellen**. Die Zusammenfassungen und Spielideen sind neu formuliert. Es wurden für diese Wissensbasis keine fremden Implementierungen, vollständigen Artikel, Lektionen, Figurendialoge, Modelle, Texturen oder sonstigen Medien übernommen.
+`data/knowledge.json` enthält **13 kurze Datenkarten: neun beim ursprünglichen Abruf öffentlich erreichbare HALVETH-/LUCINET-/Lernstudio-Quellen und vier technische Primärquellen**. Die Zusammenfassungen und Spielideen sind neu formuliert. Es wurden für diese Wissensbasis keine fremden Implementierungen, vollständigen Artikel, Lektionen, Figurendialoge, Modelle, Texturen oder sonstigen Medien übernommen.
+
+**Zugangsprüfung am 28. Oktober 2026:** `open-research-branches` ist inzwischen privat. Die fünf betroffenen Originaladressen liefern ohne Berechtigung HTTP 404. Ihre damalige Quellenfassung bleibt in `data/knowledge.json` als `historicalUrl` erhalten; `url` ist für die aktuelle Oberfläche `null`. Das Spiel zeigt dafür einen sichtbaren Hinweis statt eines Links ins Leere. `PUBLIC_SOURCE_READ` beschreibt weiterhin den dokumentierten Abrufstand vom September, keine heutige öffentliche Zugänglichkeit.
 
 ## Tatsächlicher Umfang
 
@@ -22,11 +24,11 @@ Die technischen Karten stützen sich auf die offizielle Three.js-Installationsan
 | `scarlet-garden` | [Scarlet · Profile, Quellen und ein Garten](https://github.com/Juri-Halveth/halveth-scarlet/blob/d2a253156c1f0d0f59eb92fb5bd5875b090ceedf/README.md) | PUBLIC_SOURCE_READ |
 | `lernstudio-memory` | [Lernstudio · Fortschritt gehört zur Person](https://github.com/Juri-Halveth/lernstudio/blob/b930b09f89020b57bb91e29305b7577527a91335/README.md) | PUBLIC_SOURCE_READ |
 | `lernportal-access` | [Mein Lernportal · Lernen durch Ausprobieren](https://github.com/Juri-Halveth/mein-lernportal/blob/5b46c2206ba408d70017378486cda8ea94f090b2/README.md) | PUBLIC_SOURCE_READ |
-| `research-branches` | [Open Research · Kleine fortsetzbare Projekte](https://github.com/Juri-Halveth/open-research-branches/blob/978a38931535023c136b8183c8d187d1a6f60056/README.md) | PUBLIC_SOURCE_READ |
-| `aster-memory-lens` | [LUCINET::ASTER · Quelle und Erinnerung auseinanderhalten](https://github.com/Juri-Halveth/open-research-branches/blob/978a38931535023c136b8183c8d187d1a6f60056/branches/aster-provenance-and-secret-garden/README.md) | PUBLIC_SOURCE_READ |
-| `inquiry-dialogue` | [Binary Inquiry Loop · Eine gemeinsame Frage](https://github.com/Juri-Halveth/open-research-branches/blob/978a38931535023c136b8183c8d187d1a6f60056/branches/binary-inquiry-loop/README.md) | PUBLIC_SOURCE_READ |
-| `focus-player-choice` | [Focus Kernel · Das gewählte Ziel bleibt sichtbar](https://github.com/Juri-Halveth/open-research-branches/blob/978a38931535023c136b8183c8d187d1a6f60056/branches/focus-kernel/README.md) | PUBLIC_SOURCE_READ |
-| `research-contribution` | [Mitmachen · Fragen sind Beiträge](https://github.com/Juri-Halveth/open-research-branches/blob/978a38931535023c136b8183c8d187d1a6f60056/wiki/Mitmachen.md) | PUBLIC_SOURCE_READ |
+| `research-branches` | Open Research · Kleine fortsetzbare Projekte; historischer Locator in `data/knowledge.json` | PUBLIC_SOURCE_READ; aktuell privat |
+| `aster-memory-lens` | LUCINET::ASTER · Quelle und Erinnerung auseinanderhalten; historischer Locator in `data/knowledge.json` | PUBLIC_SOURCE_READ; aktuell privat |
+| `inquiry-dialogue` | Binary Inquiry Loop · Eine gemeinsame Frage; historischer Locator in `data/knowledge.json` | PUBLIC_SOURCE_READ; aktuell privat |
+| `focus-player-choice` | Focus Kernel · Das gewählte Ziel bleibt sichtbar; historischer Locator in `data/knowledge.json` | PUBLIC_SOURCE_READ; aktuell privat |
+| `research-contribution` | Mitmachen · Fragen sind Beiträge; historischer Locator in `data/knowledge.json` | PUBLIC_SOURCE_READ; aktuell privat |
 | `three-local-world` | [Three.js · Eine lokal ausgelieferte 3D-Welt](https://threejs.org/manual/pages/installation.html) | OFFICIAL_SOURCE_READ |
 | `openmw-records` | [OpenMW · Definition, Instanz und aktiver Ort](https://openmw.readthedocs.io/en/stable/reference/lua-scripting/overview.html) | OFFICIAL_SOURCE_READ |
 | `gltf-assets` | [Khronos glTF · Austauschbare 3D-Bausteine](https://www.khronos.org/gltf/) | OFFICIAL_SOURCE_READ |
@@ -43,14 +45,14 @@ Die technischen Karten stützen sich auf die offizielle Three.js-Installationsan
 | [halveth-scarlet](https://github.com/Juri-Halveth/halveth-scarlet/tree/d2a253156c1f0d0f59eb92fb5bd5875b090ceedf) | `d2a253156c1f0d0f59eb92fb5bd5875b090ceedf` |
 | [lernstudio](https://github.com/Juri-Halveth/lernstudio/tree/b930b09f89020b57bb91e29305b7577527a91335) | `b930b09f89020b57bb91e29305b7577527a91335` |
 | [mein-lernportal](https://github.com/Juri-Halveth/mein-lernportal/tree/5b46c2206ba408d70017378486cda8ea94f090b2) | `5b46c2206ba408d70017378486cda8ea94f090b2` |
-| [open-research-branches](https://github.com/Juri-Halveth/open-research-branches/tree/978a38931535023c136b8183c8d187d1a6f60056) | `978a38931535023c136b8183c8d187d1a6f60056` |
+| open-research-branches (seit der erneuten Prüfung privat) | `978a38931535023c136b8183c8d187d1a6f60056` |
 | [Juri-Halveth.github.io](https://github.com/Juri-Halveth/Juri-Halveth.github.io/tree/3ad30e10cac511ed168e98e06ea2d0f48f9896f9) | `3ad30e10cac511ed168e98e06ea2d0f48f9896f9` |
 
 Die Kartenlinks zeigen auf diese Commits. Änderungen an `main` ändern die hier gemeinte Quellfassung nicht. Git-Objektadressen binden eine Fassung; sie beweisen keine unabhängige historische Datierung oder Rechteinhaberschaft.
 
 ## Rechte und kommerzielle Verwendung
 
-Die HALVETH-Repositories besitzen keine einheitliche pauschale MIT-Freigabe. Die gelesenen aktuellen [Scarlet-Lizenzhinweise](https://github.com/Juri-Halveth/halveth-scarlet/blob/d2a253156c1f0d0f59eb92fb5bd5875b090ceedf/LICENSES.md) ordnen neue eigene Beiträge HALVETH PIRL 2.0 zu und unterscheiden ausdrücklich Source Available von OSI-anerkanntem Open Source. Die [Lizenzkarte von Open Research](https://github.com/Juri-Halveth/open-research-branches/blob/978a38931535023c136b8183c8d187d1a6f60056/LICENSES.md) führt historische MIT-, CC-BY-, CC0- und weitere Freigaben sowie eine spätere Grenze für unterscheidbare neue Beiträge. Ein generisches MIT-Badge aus Repository-Metadaten ersetzt diese Pfad- und Versionszuordnung nicht.
+Die HALVETH-Repositories besitzen keine einheitliche pauschale MIT-Freigabe. Die gelesenen aktuellen [Scarlet-Lizenzhinweise](https://github.com/Juri-Halveth/halveth-scarlet/blob/d2a253156c1f0d0f59eb92fb5bd5875b090ceedf/LICENSES.md) ordnen neue eigene Beiträge HALVETH PIRL 2.0 zu und unterscheiden ausdrücklich Source Available von OSI-anerkanntem Open Source. Die damals gelesene Lizenzkarte von Open Research (historischer Pfad `LICENSES.md` im inzwischen privaten Repository) führt historische MIT-, CC-BY-, CC0- und weitere Freigaben sowie eine spätere Grenze für unterscheidbare neue Beiträge. Ein generisches MIT-Badge aus Repository-Metadaten ersetzt diese Pfad- und Versionszuordnung nicht.
 
 [Mein Lernportal](https://github.com/Juri-Halveth/mein-lernportal/blob/5b46c2206ba408d70017378486cda8ea94f090b2/LICENSE.txt) weist originalen Plattformcode und Originallektionen ISC zu; getrennte Hinweise für Drittmaterial bleiben maßgeblich. Das aktuelle Lernstudio-README beschreibt historische ISC-Fassungen und neue Beiträge unter besonderen Bedingungen. Eine öffentliche Lesemöglichkeit ist keine automatische Erlaubnis, beliebige Inhalte oder Marken in das Spiel zu übernehmen.
 
