@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, rm, readFile, readdir } from 'node:fs/promises';
+import { mkdtemp, rm, readFile, readdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
@@ -23,6 +23,14 @@ async function fixture(t, overrides = {}) {
   return { game, request, address, dataDir, advance: ms => { now += ms; } };
 }
 const hash = x => createHash('sha256').update(canonical(x)).digest('hex');
+
+test('explicit invalid saved-realm limits are rejected before startup', async t => {
+  const dataDir = await mkdtemp(join(tmpdir(), 'halveth-realms-limit-'));
+  t.after(() => rm(dataDir, { recursive: true, force: true }));
+  for (const maxSavedRealms of ['', '0x10', '1e2', 0, 10_001, 2.5, null]) {
+    await assert.rejects(createGameServer({ dataDir, port: 0, maxSavedRealms }), /REALMS_MAX_SAVED_REALMS/);
+  }
+});
 
 function localRequest(url, { method = 'GET', headers = {}, body } = {}) {
   return new Promise((accept, reject) => {
@@ -204,6 +212,69 @@ test('realm changes preserve previous checkpoints and refuse to displace another
   assert.equal(restored.data.world.worldId, original.worldId);
   assert.deepEqual(restored.data.world.landmarks, original.landmarks);
   assert.equal((await readdir(join(dataDir, 'realms'))).length, 2);
+});
+
+test('saved-realm limit rejects new seeds without changing the active world or deleting old checkpoints', async t => {
+  const { request, dataDir } = await fixture(t, { maxSavedRealms: 2 });
+  const guest = (await request('/api/join', { name: 'Archivgast' })).data;
+  const initial = (await request('/api/state')).data;
+  assert.equal((await request('/api/world', { token: guest.token, seed: 'Zweite Insel' })).status, 200);
+  const second = (await request('/api/state')).data;
+  const currentBefore = await readFile(join(dataDir, 'current.json'), 'utf8');
+  const rejected = await request('/api/world', { token: guest.token, seed: 'Dritte Insel' });
+  assert.equal(rejected.status, 409);
+  assert.match(rejected.data.error, /gespeicherten Welten/);
+  assert.equal((await request('/api/state')).data.worldId, second.worldId);
+  assert.equal(await readFile(join(dataDir, 'current.json'), 'utf8'), currentBefore);
+  assert.equal((await readdir(join(dataDir, 'realms'))).filter(name => name.endsWith('.json')).length, 2);
+  assert.equal((await request('/api/world', { token: guest.token, seed: initial.seed })).status, 200);
+  assert.equal((await request('/api/state')).data.worldId, initial.worldId);
+  assert.equal((await request('/api/world', { token: guest.token, seed: 'Zweite Insel' })).status, 200);
+  assert.equal((await request('/api/world', { token: guest.token, seed: 'Zweite Insel' })).status, 200);
+});
+
+test('reopening at the saved-realm limit still loads and saves the active world', async t => {
+  const f = await fixture(t, { maxSavedRealms: 2 });
+  const guest = (await f.request('/api/join', { name: 'Archivgast' })).data;
+  assert.equal((await f.request('/api/world', { token: guest.token, seed: 'Zweite Insel' })).status, 200);
+  await f.game.close();
+  await rm(join(f.dataDir, 'current.json'));
+  const previousInitialSeed = process.env.REALMS_INITIAL_SEED;
+  let reopened;
+  try {
+    delete process.env.REALMS_INITIAL_SEED;
+    await assert.rejects(createGameServer({ dataDir: f.dataDir, port: 0, autoTickMs: 0, maxSavedRealms: 1 }), /gespeicherten Welten/);
+    await writeFile(join(f.dataDir, 'current.json'), '{broken', 'utf8');
+    process.env.REALMS_INITIAL_SEED = 'Zweite Insel';
+    reopened = await createGameServer({ dataDir: f.dataDir, port: 0, autoTickMs: 0, maxSavedRealms: 1 });
+  } finally {
+    if (previousInitialSeed === undefined) delete process.env.REALMS_INITIAL_SEED;
+    else process.env.REALMS_INITIAL_SEED = previousInitialSeed;
+  }
+  try {
+    assert.equal(reopened.snapshot().seed, 'Zweite Insel');
+    assert.equal(JSON.parse(await readFile(join(f.dataDir, 'current.json'), 'utf8')).seed, 'Zweite Insel');
+    await reopened.start();
+    const address = reopened.server.address();
+    const base = `http://127.0.0.1:${address.port}`;
+    const joinedResponse = await fetch(base + '/api/join', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Wiederkehr' }) });
+    const nextGuest = await joinedResponse.json();
+    const switchBack = await fetch(base + '/api/world', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: nextGuest.token, seed: 'Gemeinsame Sterne' }) });
+    assert.equal(switchBack.status, 200);
+    assert.equal((await readdir(join(f.dataDir, 'realms'))).filter(name => name.endsWith('.json')).length, 2);
+  } finally { await reopened.close(); }
+});
+
+test('concurrent world switches cannot admit two new realm files through one remaining slot', async t => {
+  const { request, dataDir } = await fixture(t, { maxSavedRealms: 2 });
+  const guest = (await request('/api/join', { name: 'Einzelgast' })).data;
+  const results = await Promise.all([
+    request('/api/world', { token: guest.token, seed: 'Nord' }),
+    request('/api/world', { token: guest.token, seed: 'Süd' }),
+  ]);
+  assert.equal(results.filter(result => result.status === 200).length, 1);
+  assert.ok(results.every(result => [200, 409, 503].includes(result.status)));
+  assert.equal((await readdir(join(dataDir, 'realms'))).filter(name => name.endsWith('.json')).length, 2);
 });
 
 test('export hash chain binds accepted events and checkpoint survives a fresh server process', async t => {
