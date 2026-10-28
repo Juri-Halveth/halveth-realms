@@ -6,6 +6,8 @@ The delivered service is running on one computer at `127.0.0.1:18770`. It is not
 
 Use `START.cmd` or `node scripts/launch.mjs`. All rendering resources are local. Separate browser sessions on the same server can share the world. Guest access permits bounded gameplay actions; it does not expose operating-system administration.
 
+The server retains a separate checkpoint for each world seed. By default it admits up to 256 distinct saved worlds; `REALMS_MAX_SAVED_REALMS` can set a decimal integer from 1 to 10000 before startup. At the limit, existing worlds remain selectable and savable, while a new seed returns HTTP 409. The server never deletes checkpoints automatically. If `current.json` is missing or stale in a full directory, set `REALMS_INITIAL_SEED` to the seed of an existing checkpoint for one startup; a successful start repairs the current pointer. The seed is stored in each checkpoint's `world.seed` field. Count is an admission limit for new seed files, not a guarantee of a maximum byte size. Run only one server writer per data directory; separate processes do not coordinate quota admission or checkpoint writes. Stop the server and back up the files before operator-led cleanup; removing the active checkpoint while the server runs will recreate it on the next save.
+
 ## Private-network prototype
 
 An operator can choose `REALMS_HOST` and `REALMS_PORT` explicitly, then start `node server.mjs`. For example a private-network address can make the prototype reachable on that operator-controlled interface. No firewall, router or host settings are changed by this project. The existing guest scheme identifies sessions, not verified human accounts. Conversations and world changes are shared world data.

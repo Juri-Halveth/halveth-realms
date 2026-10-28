@@ -1,6 +1,6 @@
 import http from 'node:http';
 import { createHash, randomBytes } from 'node:crypto';
-import { readFile, writeFile, mkdir, rename, stat } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, rename, stat, readdir } from 'node:fs/promises';
 import { resolve, dirname, extname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createWorld, evolveWorld, seedIntFromString, WORLD_LIMIT } from './shared/world.mjs';
@@ -10,6 +10,7 @@ const VERSION = JSON.parse(await readFile(resolve(ROOT, 'package.json'), 'utf8')
 const MAX_GUESTS = 10;
 const ZERO_HASH = '0'.repeat(64);
 const MAX_LEDGER = 1024;
+const DEFAULT_MAX_SAVED_REALMS = 256;
 const COLORS = ['#ff648d', '#67e5dc', '#ffcf77', '#a69eff', '#8beeab', '#ffad7b', '#8ebfff', '#d3a9ff', '#f5ea99', '#e69ec6'];
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.ico': 'image/x-icon' };
 
@@ -107,10 +108,26 @@ export async function createGameServer(options = {}) {
   const sessions = new Map();
   const host = options.host || process.env.REALMS_HOST || '127.0.0.1';
   const port = options.port ?? Number(process.env.REALMS_PORT || 18770);
+  const rawMaxSavedRealms = Object.hasOwn(options, 'maxSavedRealms') ? options.maxSavedRealms
+    : Object.hasOwn(process.env, 'REALMS_MAX_SAVED_REALMS') ? process.env.REALMS_MAX_SAVED_REALMS : DEFAULT_MAX_SAVED_REALMS;
+  const maxSavedRealms = typeof rawMaxSavedRealms === 'string' && /^[1-9][0-9]*$/.test(rawMaxSavedRealms)
+    ? Number(rawMaxSavedRealms) : rawMaxSavedRealms;
+  if (!Number.isSafeInteger(maxSavedRealms) || maxSavedRealms < 1 || maxSavedRealms > 10_000) {
+    throw new TypeError('REALMS_MAX_SAVED_REALMS muss eine ganze Zahl zwischen 1 und 10000 sein.');
+  }
   let world, ledger = [], ledgerHead = ZERO_HASH, dirty = false, closed = false;
   let flushTail = Promise.resolve(), closePromise = null;
   const realmsDir = resolve(dataDir, 'realms');
   await mkdir(realmsDir, { recursive: true });
+
+  async function ensureNewRealmCapacity(seed) {
+    const filename = `${sha256(seed)}.json`;
+    const checkpoints = (await readdir(realmsDir, { withFileTypes: true }))
+      .filter(entry => entry.isFile() && /^[a-f0-9]{64}\.json$/.test(entry.name));
+    if (checkpoints.some(entry => entry.name === filename)) return;
+    expect(checkpoints.length < maxSavedRealms, 409,
+      `Das Limit von ${maxSavedRealms} gespeicherten Welten ist erreicht. Vorhandene Welten bleiben spielbar; neue Welten benötigen eine Betreiberentscheidung über Speicher oder Limit.`);
+  }
 
   function fresh(seed) {
     const next = createWorld(seed);
@@ -181,13 +198,16 @@ export async function createGameServer(options = {}) {
       record('genesis', 'Eine neue Welt entsteht: Scharlachstadt, heller Hain und kosmische Ruinen.', { seedHash: next.seedHash });
     }
   }
-  let initialSeed = options.seed;
-  if (!initialSeed) {
+  const explicitInitialSeed = options.seed !== undefined || Object.hasOwn(process.env, 'REALMS_INITIAL_SEED');
+  let initialSeed = options.seed !== undefined ? options.seed : process.env.REALMS_INITIAL_SEED;
+  if (initialSeed === undefined) {
     try { initialSeed = JSON.parse(await readFile(resolve(dataDir, 'current.json'), 'utf8')).seed; }
     catch (error) { if (error.code !== 'ENOENT') throw error; }
   }
-  await load(textField(initialSeed || 'HALVETH · Morgenlicht', 'Weltsaat', 160));
-  await flush();
+  initialSeed = textField(initialSeed === undefined ? 'HALVETH · Morgenlicht' : initialSeed, 'Weltsaat', 160);
+  await ensureNewRealmCapacity(initialSeed);
+  await load(initialSeed);
+  await flush(explicitInitialSeed);
   function sessionFor(token) {
     expect(typeof token === 'string' && sessions.has(token), 401, 'Gast-Sitzung fehlt oder ist abgelaufen. Bitte erneut beitreten.');
     const session = sessions.get(token);
@@ -361,6 +381,7 @@ export async function createGameServer(options = {}) {
           const previous = { world, ledger, ledgerHead };
           try {
             await flush(true);
+            await ensureNewRealmCapacity(seed);
             await load(seed);
             session.player.x = 0; session.player.z = 36; session.player.yaw = 0; session.player.levitating = false;
             session.moveAt = null; session.moveCredits = 2;
