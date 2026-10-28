@@ -23,5 +23,5 @@
     "desktop:dir": "electron-builder --win --x64 --dir --publish never",
     "desktop:build": "electron-builder --win nsis --x64 --publish never"
   },
-  "devDependencies": { "electron": "44.9.0", "electron-builder": "26.15.3", "@resvg/resvg-js": "2.6.2" }
+  "devDependencies": { "electron": "44.9.1", "electron-builder": "26.15.3", "@resvg/resvg-js": "2.6.2" }
 }
