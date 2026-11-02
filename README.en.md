@@ -2,6 +2,8 @@
 
 # Scarlet Garden – explore procedural fantasy worlds
 
+**[Open the Windows desktop preview 0.2.0](https://github.com/Juri-Halveth/halveth-realms/releases/tag/v0.2.0).** It is an unsigned pre-release; the [installation guide](docs/DESKTOP-INSTALL.md) explains its requirements and limits.
+
 **Concise project guide · EN / RU**
 
 An original procedural fantasy sandbox with an observatory, luminous groves, settlements and ruins. The documented desktop edition packages a JavaScript/WebGL game and local simulation server in an Electron application; installation, saves and controls are explained in the original README.

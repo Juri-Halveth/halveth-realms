@@ -4,15 +4,14 @@
 
 # Scarlet Garden – prozedurale Fantasywelten erkunden
 
-[![Realms im HALVETH NETZ: Modellkarte mit Seed-Punkten und stabilen IDs](assets/netz-starship-hero.svg)](https://juri-halveth.github.io/universum/)
-
-**Im NETZ:** [Interaktives Starship Lab öffnen](https://juri-halveth.github.io/universum/) · Themen: Welten & Interaktion. Im Katalog dieses Projekt wählen; die eigene Anwendung und ihre Quellen bleiben hier dokumentiert.
-
-
 Ein eigenständiger Fantasy-Sandbox-Prototyp mit prozeduralen Welten. Der Quellcode und die Startanleitung zeigen den jeweiligen Spiel- und Distributionsstand.
 
-[**Projekt öffnen →**](https://github.com/Juri-Halveth/halveth-realms#readme) · [Arbeitsproben](https://juri-halveth.github.io/koennen/) · [Portfolio](https://juri-halveth.github.io/)
+**Direkt spielen:** [Windows-Desktop-Vorschau 0.2.0 öffnen](https://github.com/Juri-Halveth/halveth-realms/releases/tag/v0.2.0).
+Das Release ist eine installierbare, nicht signierte Vorabfassung; die Anleitung nennt Installation, Start und Grenzen.
 
+[Deutsche Startanleitung und Quellcode-Startweg](docs/START-DE.md) · [HALVETH Starship Lab (optional)](https://juri-halveth.github.io/universum/)
+
+![Realms im HALVETH NETZ: Modellkarte mit Seed-Punkten und stabilen IDs](assets/netz-starship-hero.svg)
 
 An original procedural fantasy sandbox: a scarlet observatory, luminous groves, settlements and cosmic ruins. Explore, levitate, grow a grove, meet the inhabitants and watch new communities form. The first playable edition is a small stylized world, built as a foundation for a larger independent game.
 
