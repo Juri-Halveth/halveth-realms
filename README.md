@@ -15,7 +15,7 @@ Das Release ist eine installierbare, nicht signierte Vorabfassung; die Anleitung
 
 An original procedural fantasy sandbox: a scarlet observatory, luminous groves, settlements and cosmic ruins. Explore, levitate, grow a grove, meet the inhabitants and watch new communities form. The first playable edition is a small stylized world, built as a foundation for a larger independent game.
 
-**Own code: MIT. Commercial use is permitted under the license.** Three.js retains its separate MIT notice. The project contains no Morrowind/GTA assets and does not require either game.
+**Own code: [MIT](LICENSE). Commercial use is permitted under the license.** Three.js retains its [separate MIT notice](THIRD-PARTY-NOTICES.md). The project contains no Morrowind/GTA assets and does not require either game.
 
 ## Windows desktop edition (0.2.0)
 
