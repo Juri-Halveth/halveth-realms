@@ -24,5 +24,5 @@
     "desktop:build": "electron-builder --win nsis --x64 --publish never"
   },
   "overrides": { "minimatch@>=7 <11.0.1": "11.0.9" },
-  "devDependencies": { "electron": "45.3.4", "electron-builder": "26.18.0", "@resvg/resvg-js": "2.6.2" }
+  "devDependencies": { "electron": "45.5.0", "electron-builder": "26.18.0", "@resvg/resvg-js": "2.6.2" }
 }
